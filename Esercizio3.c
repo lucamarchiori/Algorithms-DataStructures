@@ -142,7 +142,7 @@ const unsigned int EDGE_PROBABILITY = 1.0;
 // Maximum weight.
 const unsigned int MAX_WEIGHT = 1000;
 // Output type.
-const output_enum_t output_type = ONFILE;
+const output_enum_t output_type = ONCONSOLE;
 // Output pointer (for printing).
 FILE* output_pointer;
 
@@ -223,6 +223,7 @@ min_heap_t min_heap_create(const unsigned int array_length) {
  * @return true if it is.
  */
 bool min_heap_is_empty(min_heap_t* H) {
+	
     return true;
 }
 
@@ -264,7 +265,11 @@ void min_heap_free(min_heap_t* H) {
  * @return Newly create node.
  */
 queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned int distance) {
-    return NULL;
+	queue_node_t* nodo;
+	nodo->distance = distance;
+	nodo->vertex_number = vertex_number;
+	nodo->present = true;
+    return nodo;
 }
 
 /**
@@ -283,7 +288,14 @@ queue_t queue_create(const unsigned int array_length) {
  * @return true if it is.
  */
 bool queue_is_empty(queue_t* Q) {
-    return true;
+	if (Q->queue_size == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /**
@@ -292,6 +304,7 @@ bool queue_is_empty(queue_t* Q) {
  * @return Queue node containing the minimum (estimated distance from the source).
  */
 queue_node_t* queue_extract_min(queue_t* Q) {
+	
     return NULL;
 }
 
@@ -355,7 +368,22 @@ void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int ta
  * @return Newly create graph.
  */
 graph_t graph_create(unsigned const int number_vertices, const double edge_prob) {
+	
     graph_t G;
+    int prob = 0;
+    G.number_vertices = number_vertices;
+    for(int i = 0; i<number_vertices; i++)
+    {
+    	for(int j = 0; j<number_vertices; j++)
+    	{
+    		prob = rand()%2;
+    		if(prob==0)
+			{
+				//graph_add_edge(G,i,j,0);
+			}
+		}
+    	
+	}
     return G;
 }
 
@@ -522,3 +550,4 @@ int main() {
     
     return 0;
 }
+
