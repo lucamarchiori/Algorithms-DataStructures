@@ -380,7 +380,10 @@ void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
  * @return Newly created node.
  */
 adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned int weight) {
-    return NULL;
+	adj_list_node_t* nodo;
+	nodo->target = target;
+	nodo->weight = weight;
+    return nodo;
 }
 
 /**
@@ -391,7 +394,7 @@ adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned 
  * @param weight Weight of the edge.
  */
 void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int target, const unsigned int weight) {
-    return;
+	return;
 }
 
 /**
@@ -412,6 +415,7 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     		prob = rand()%100;
     		if(edge_prob<prob)
 			{
+				//adj_list_node_t nodo = adj_list_create_node(i,)
 				graph_add_edge(&G,i,j,0);
 			}
 		}
@@ -482,7 +486,15 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param source Source vertex number.
  */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-    return;
+	/*
+	queue_t coda = queue_create(G->number_vertices);
+	for(int i=0;i<G->number_vertices;i++)
+	{
+		queue_node_t nodo = queue_create_node(i,INT_MAX);
+	}
+	  
+	  
+    return;*/
 }
 
 /**
