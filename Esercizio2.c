@@ -150,6 +150,8 @@ const bool TEST_DATA_STRUCTURES = true;
 const unsigned int NUM_ELEMENTS_FOR_TEST = 1000;
 // Output type.
 const outputEnum_t outputType = ONCONSOLE;
+//conteggio
+unsigned int CONT = 0;
 // Output pointer (for printing).
 FILE* outputPointer;
 
@@ -977,38 +979,32 @@ bool rbtTest() {
  * @param rbt Tree to be checked.
  * @return True if it is; otherwise, false.
  */
+
+bool isRbtp1(rbt_t *rbt,rbtNode_t *x){
+    bool risultato;
+    
+    if(x->color == 'R' || x->color == 'B'){
+        risultato= true;
+        CONT++;
+    }
+    else{
+        risultato = false;
+        return risultato;
+    }
+    
+    if(x != rbt->nil){
+        isRbtp1(rbt,x->left);
+        isRbtp1(rbt,x->right);
+
+    }
+
+    return risultato;
+}
 bool isRbt(rbt_t* rbt) {
     bool risultato;
     rbtNode_t *node = rbt->root;
     //propriet� 1: ogni nodo � rosso o nero
-    while(node != rbt->nil){
-        if(node->color == 'R' || node->color == 'B'){
-            risultato = true;
-            node = node->left;
-            while(node  != rbt->nil){
-                if(node->color == 'R' || node->color == 'B')
-                    risultato = true;
-                else
-                    risultato = false;
-                node = node->left;
-            }
-            node = rbt->root;
-            node = node->right;
-            while(node != rbt->nil){
-                if(node->color == 'R' || node->color == 'B')
-                    risultato = true;
-                else
-                    risultato = false;
-                node = node->right;
-            }
-
-        }else{
-            risultato = false;
-        }
-    }
-
-    
-
+    isRbtp1(rbt,node);
 
     //propriet� 2: la radice � nera
     if(rbt->root->color == 'B'){
@@ -1269,6 +1265,7 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
             rbt->size++;
         }
 
+        isRbt(rbt);
 
         for(int j=0;j<numSearches; j++){
             key=rand()%MAX_RANDOM_NUMBER +1;
