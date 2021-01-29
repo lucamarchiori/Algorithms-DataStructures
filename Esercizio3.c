@@ -242,8 +242,13 @@ bool min_heap_is_empty(min_heap_t* H) {
  * @return Min-heap node containing the minimum (estimated distance from the source).
  */
 min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
-	min_heap_node_t* min = H->A[0];
-    return min;
+	if(!min_heap_is_empty(H))
+	{
+		H->heap_size--;
+		//BISOGNA BILANCIARE
+		min_heap_node_t* min = H->A[0];
+    	return min;
+	}
 }
 
 /**
@@ -395,10 +400,10 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     {
     	for(int j = 0; j<number_vertices; j++)
     	{
-    		prob = rand()%2;
-    		if(prob==0)
+    		prob = rand()%100;
+    		if(edge_prob<prob)
 			{
-				//graph_add_edge(G,i,j,0);
+				graph_add_edge(&G,i,j,0);
 			}
 		}
     	
