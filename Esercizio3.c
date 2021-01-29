@@ -294,6 +294,8 @@ queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned
  */
 queue_t queue_create(const unsigned int array_length) {
     queue_t Q;
+    Q.array_length = array_length;
+    Q.queue_size = 0;
     return Q;
 }
 
@@ -304,13 +306,9 @@ queue_t queue_create(const unsigned int array_length) {
  */
 bool queue_is_empty(queue_t* Q) {
 	if (Q->queue_size == 0)
-	{
 		return true;
-	}
 	else
-	{
 		return false;
-	}
 }
 
 /**
@@ -327,8 +325,11 @@ queue_node_t* queue_extract_min(queue_t* Q) {
 		{
 			min_dis =  Q->A[i]->distance;
 			min = Q->A[i];
+			Q->A[i]->present = false;
+			Q->queue_size--;
 		}
 	}
+	
     return min;
 }
 
@@ -339,7 +340,8 @@ queue_node_t* queue_extract_min(queue_t* Q) {
  * @param distance New distance/key.
  */
 void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsigned int distance) {
-    return;
+    Q->A[vertex_number]->distance = distance;
+	return;
 }
 
 /**
@@ -347,6 +349,13 @@ void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsi
  * @param Q Queue.
  */
 void queue_free(queue_t* Q) {
+	for(int i = 0; i<Q->queue_size;i++)
+	{
+		Q->A[i]->distance=0;
+		Q->A[i]->present=0;
+		Q->A[i]->vertex_number=0;
+	}
+	Q->queue_size = 0;
     return;
 }
 
