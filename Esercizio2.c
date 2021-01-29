@@ -131,7 +131,7 @@ typedef enum outputEnum_t {
 // Random seed (important for reproducibility).
 time_t RANDOM_SEED = 20;
 // Maximum random number allowed.
-const unsigned int MAX_RANDOM_NUMBER = 10000000;
+const unsigned int MAX_RANDOM_NUMBER = 100;
 // Minimum number of operations.
 const unsigned int MIN_OPERATIONS = 100;
 // Maximum number of operations.
@@ -443,7 +443,7 @@ int main() {
         exit(-1);
     }
 
-    // Print the header, only if it is on console.
+    // Print the header, only if itONFILE is on console.
     if (outputType == ONCONSOLE) {
         fprintf(outputPointer, "+-----------------------------+---------------------+---------------------+\n");
         fprintf(outputPointer, "| Operations - %%I & %%S        | Hashtable - %-5d   | Red Black Tree      |\n", NUM_ENTRIES);
@@ -501,6 +501,7 @@ int main() {
 
     if (TEST_DATA_STRUCTURES) {
         fprintf(outputPointer, "| Hashtable implementation: %-12s                                  |\n", hashtableTest() ? "correct" : "not correct");
+
         fprintf(outputPointer, "| Red black tree implementation: %-12s                             |\n", rbtTest() ? "correct" : "not correct");
         fprintf(outputPointer, "+-------------------------------------------------------------------------+\n");
     }
@@ -772,7 +773,7 @@ rbtNode_t* createRbtNode(const int v) {
  * @return Created RBT.
  */
 rbt_t* createRbt() {
-    rbt_t *rbt = malloc(sizeof(rbt_t));
+    rbt_t *rbt = (rbt_t*)malloc(sizeof(rbt_t));
     rbt->nil = createRbtNode(0);
     rbt->nil->color = 'B';
     rbt->root=rbt->nil;
@@ -790,17 +791,17 @@ void rbtLeftRotate(rbt_t* rbt, rbtNode_t* x) {
     rbtNode_t *y;
     y = x->right;
     x->right=y->left;
-    if(y->left != rbt->nil){
+    if (!(y->left ==rbt->nil)){
         y->left->parent = x;
     }
     y->parent = x->parent;
     if(x->parent == rbt->nil){
         rbt->root= y;
     }
-    if(x->parent != rbt->nil && x == x->parent->left){
+    if(!(x->parent == rbt->nil) && x == x->parent->left){
             x->parent->left= y;
     }
-    if(x->parent != rbt->nil && x == x->parent->right){
+    if(!(x->parent == rbt->nil) && x == x->parent->right){
         x->parent->right = y;
     }
     y->left = x;
@@ -844,7 +845,7 @@ void rbtInsert(rbt_t* rbt, rbtNode_t* z) {
     rbtNode_t *y,*x;
     y = rbt->nil;
     x = rbt->root;
-    while(! x == rbt->nil){
+    while ( !(x == rbt->nil)){
         y = x;
         if(z->value < x->value){
             x = x->left;
@@ -860,7 +861,7 @@ void rbtInsert(rbt_t* rbt, rbtNode_t* z) {
         y->left = z;
     }
     if(!(y==rbt->nil) && z->value >= y->value){
-        y->left = z;
+        y->right = z;
     }
     z->left= rbt->nil;
     z->right=rbt->nil;
@@ -882,39 +883,40 @@ void rbtInsertFixup(rbt_t* rbt, rbtNode_t* z) {
             if(y->color=='R'){
                 z->parent->color = 'B';
                 y->color = 'B';
-                z->parent->parent = 'R';
+                z->parent->parent->color = 'R';
                 z = z->parent->parent;
             }else{
                 if(z == z->parent->right){
-                z = z->parent;
-                rbtLeftRotate(rbt,z);
+                    z = z->parent;
+                    rbtLeftRotate(rbt,z);
                 }
                 z->parent->color='B';
                 z->parent->parent->color= 'R';
                 rbtRightRotate(rbt,z->parent->parent);
-                }
+            }
         }
         else
             {
-            y= z->parent->parent->left;
-            if(y->color=='R'){
-            z->parent->color = 'B';
-            y->color = 'B';
-            z->parent->parent = 'R';
-            z = z->parent->parent;
-        }
-        else
+            y = z->parent->parent->left;
+            if(y->color == 'R'){
+                z->parent->color = 'B';
+                y->color = 'B';
+                z->parent->parent->color = 'R';
+                z = z->parent->parent;
+            }
+            else
             {
-            if(z == z->parent->left){
-                z = z->parent;
-                rbtRightRotate(rbt,z);
+                if(z == z->parent->left){
+                    z = z->parent;
+                    rbtRightRotate(rbt,z);
                 }
                 z->parent->color='B';
                 z->parent->parent->color= 'R';
                 rbtLeftRotate(rbt,z->parent->parent);
             }
-            }
+        }
     }
+    rbt->root->color= 'B';
 }
 
 
@@ -926,14 +928,11 @@ void rbtInsertFixup(rbt_t* rbt, rbtNode_t* z) {
  */
 rbtNode_t* rbtSearch(rbt_t* rbt, const int v) {
     rbtNode_t *x = rbt->root;
-    if((x == NULL) || (x->value == v)){
-        return x;
+    while((x!=rbt->nil)&&(v!=x->value)){
+        x = v < x->value ? x->left : x->right;
     }
-    if(v <= x->value){
-        return rbtSearch(x->left,v);
-    }else{
-        return rbtSearch(x->right,v);
-    }
+    return x;
+
 }
 
 /**
@@ -979,13 +978,130 @@ bool rbtTest() {
  * @return True if it is; otherwise, false.
  */
 bool isRbt(rbt_t* rbt) {
-    //proprietà 1: ogni nodo è rosso o nero
-    //proprietà 2: la radice è nera
-    //proprietà 3: ogni foglia esterna = T.nil è nera
-    //proprietà 4: se un nodo è rosso entrambi i figli sono neri
-    //proprietà 5: altezza nera rispettata
+    bool risultato;
+    rbtNode_t *node = rbt->root;
+    //proprietï¿½ 1: ogni nodo ï¿½ rosso o nero
+    while(node != rbt->nil){
+        if(node->color == 'R' || node->color == 'B'){
+            risultato = true;
+            node = node->left;
+            while(node  != rbt->nil){
+                if(node->color == 'R' || node->color == 'B')
+                    risultato = true;
+                else
+                    risultato = false;
+                node = node->left;
+            }
+            node = rbt->root;
+            node = node->right;
+            while(node != rbt->nil){
+                if(node->color == 'R' || node->color == 'B')
+                    risultato = true;
+                else
+                    risultato = false;
+                node = node->right;
+            }
+
+        }else{
+            risultato = false;
+        }
+    }
+
+    
 
 
+    //proprietï¿½ 2: la radice ï¿½ nera
+    if(rbt->root->color == 'B'){
+        risultato = true;
+    }else{
+        risultato = false;
+    }
+
+
+    //proprietï¿½ 3: ogni foglia esterna = T.nil ï¿½ nera
+
+    if(rbt->nil->color == 'B'){
+        risultato = true;
+    }else{
+        risultato = false;
+    }
+
+
+
+    //proprietï¿½ 4: se un nodo ï¿½ rosso entrambi i figli sono neri
+    node = rbt->root;
+    if(node->color == 'R'){
+        if(node->left->color == 'R' && node->right->color == 'B'){
+            risultato = true;
+        }else{
+            risultato = false;
+        }
+    }
+    if(node->color == 'B'){
+        if(node->left->color == 'B' && node->right->color == 'R' || node->left->color == 'R' && node->right->color == 'B'){
+            risultato = true;
+        }else{
+            if(node->left->color == 'R' && node->right->color == 'R'){
+                risultato = true;
+            }else{
+                risultato = false;
+            }
+        }
+    }
+    
+        //SOTTO-ALBERO SINISTRO
+    node = rbt->root;
+    node = node->left;
+    while(node != rbt->nil && node->left != rbt->nil && node->right != rbt->nil) {
+        if(node->color == 'B'){
+            if(node->left->color == 'R' && node->right->color == 'R'){
+                risultato = true;
+            }else{
+                risultato = false;
+            }
+        }
+        if(node->color == 'R'){
+            if(node->left->color == 'B' && node->right->color == 'B'){
+                risultato = true;
+            }else{
+                risultato = false;
+                }
+            }
+            
+            node = node->left;
+        }
+        //SOTTO-ALBERO DESTRO
+    node = rbt->root;
+    node = node->right;
+    while(node != rbt->nil && node->left != rbt->nil && node->right != rbt->nil){
+        if(node->color == 'B'){
+            if(node->left->color == 'R' && node->right->color == 'R'){
+                risultato = true;
+            }else{
+                risultato = false;
+                }
+            }
+            if(node->color == 'R'){
+                if(node->left->color == 'B' && node->right->color == 'B'){
+                    risultato = true;
+                }else{
+                    risultato = false;
+                }
+            }
+            node = node->right;
+    }
+    
+
+
+    //proprietï¿½ 5: altezza nera rispettata
+    if(rbtComputeBlackHeight){
+        risultato = true;
+    }else{
+        risultato = false;
+    }
+
+
+    return risultato;
 
 }
 
@@ -995,7 +1111,29 @@ bool isRbt(rbt_t* rbt) {
  * @return True if it is; otherwise, false.
  */
 bool rbtHasBstProperty(rbt_t* rbt) {
-return;
+    bool risultato;
+    rbtNode_t *x;
+    x = rbt->root;
+    //sottoalbero sinistro
+    while(x != rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
+        if(x->left->value < x->value && x->right->value >= x->value){
+            risultato = true;
+        }else{
+            risultato = false;
+        }
+        x = x->left;
+    }
+    //sottoalbero destro
+    x = rbt->root;
+    while(x != rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
+        if(x->left->value < x->value && x->right->value >= x->value){
+            risultato = true;
+        }else{
+            risultato = false;
+        }
+        x = x->right;
+    }
+return risultato;
 }
 
 /**
@@ -1036,6 +1174,17 @@ int rbtComputeBlackHeight(rbt_t* rbt, rbtNode_t* x) {
  * @param x RBT node to be freed.
  */
 void rbtFreeNodes(rbt_t* T, rbtNode_t* x) {
+    while(x != T->nil){
+        free(x);
+        rbtFreeNodes(T,x->left);
+        free(x->right);
+        free(x->left);
+        rbtFreeNodes(T,x->right);
+        free(x->left);
+        free(x->right);
+
+    }
+
 }
 
 /**
@@ -1043,7 +1192,12 @@ void rbtFreeNodes(rbt_t* T, rbtNode_t* x) {
  * @param T RBT to be freed.
  */
 void rbtFree(rbt_t* T) {
-
+    rbtNode_t *x;
+    x = T->root;
+    while(x != T->nil){
+        rbtFreeNodes(T,x);
+    }
+    free(T);
 }
 
 // ----- End of RBT ----- //
@@ -1112,11 +1266,17 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
             key=rand()%MAX_RANDOM_NUMBER +1;
             nod_rbt=createRbtNode(key);
             rbtInsert(rbt,nod_rbt);
+            rbt->size++;
         }
+
+
         for(int j=0;j<numSearches; j++){
             key=rand()%MAX_RANDOM_NUMBER +1;
             nod_rbt=rbtSearch(rbt,key);
         }
+
+
+
     }
     else{
         fprintf(stderr, "ERROR: There is no such sorting alghoritm called %s \n", dataStructure);
@@ -1133,3 +1293,4 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
 // ----- End of CORE FUNCTIONS ----- //
 
 // ##### End of IMPLEMENTATION OF THE FUNCTIONS ##### //
+
