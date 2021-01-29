@@ -223,8 +223,14 @@ min_heap_t min_heap_create(const unsigned int array_length) {
  * @return true if it is.
  */
 bool min_heap_is_empty(min_heap_t* H) {
-	
-    return true;
+	if(H->heap_size == 0)
+	{
+	    return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /**
@@ -233,7 +239,8 @@ bool min_heap_is_empty(min_heap_t* H) {
  * @return Min-heap node containing the minimum (estimated distance from the source).
  */
 min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
-    return NULL;
+	min_heap_node_t* min = H->A[0];
+    return min;
 }
 
 /**
@@ -304,8 +311,17 @@ bool queue_is_empty(queue_t* Q) {
  * @return Queue node containing the minimum (estimated distance from the source).
  */
 queue_node_t* queue_extract_min(queue_t* Q) {
-	
-    return NULL;
+	queue_node_t* min = Q->A[0];
+	int min_dis = Q->A[0]->distance;
+	for(int i=0; i<Q->queue_size; i++)
+	{
+		if(Q->A[i]->present && Q->A[i]->distance<min_dis)
+		{
+			min_dis =  Q->A[i]->distance;
+			min = Q->A[i];
+		}
+	}
+    return min;
 }
 
 /**
