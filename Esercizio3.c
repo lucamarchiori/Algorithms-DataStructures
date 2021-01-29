@@ -186,7 +186,10 @@ int heap_right_index(const unsigned int i) {
  * @return Newly created node.
  */
 min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const unsigned int distance) {
-    return NULL;
+    min_heap_node_t* nodo;
+    nodo->vertex_number = vertex_number;
+    nodo->distance = distance;
+	return nodo;
 }
 
 /**
