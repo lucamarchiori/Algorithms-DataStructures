@@ -207,6 +207,23 @@ void min_heap_swap(min_heap_node_t** x, min_heap_node_t** y) {
  * @param i Index needed by the procedure.
  */
 void min_heap_heapify(min_heap_t* H, const unsigned int i) {
+	int l = heap_left_index(i);
+	int r = heap_right_index(i);
+	int smallest = i;
+	if(l<=H->heap_size && H->A[l]<H->A[i])
+	{
+		smallest = l;
+	}
+	if(r<=H->heap_size && H->A[r]<H->A[smallest])
+	{
+		smallest = r;
+	}  
+	if(smallest != i)
+	{
+		min_heap_swap(&H->A[i],&H->A[smallest]);
+		min_heap_heapify(H,smallest);
+	}
+	 
     return;
 }
 
@@ -217,6 +234,12 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  */
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
+    H.array_length = array_length;
+    for(int i = (H.array_length)/2; i>1; i--)
+    {
+    	min_heap_heapify(&H, i);
+	}
+    
     return H;
 }
 
@@ -266,6 +289,10 @@ void min_heap_decrease_key(min_heap_t* H, const unsigned int vertex_number, cons
  * @param H Min-heap.
  */
 void min_heap_free(min_heap_t* H) {
+	for(int i = 0; i<H->array_length; i++)
+	{
+		free(H->A[i]);
+	}
     return;
 }
 
@@ -318,6 +345,7 @@ bool queue_is_empty(queue_t* Q) {
  */
 queue_node_t* queue_extract_min(queue_t* Q) {
 	queue_node_t* min = Q->A[0];
+	int index = 0;
 	int min_dis = Q->A[0]->distance;
 	for(int i=0; i<Q->queue_size; i++)
 	{
@@ -325,11 +353,14 @@ queue_node_t* queue_extract_min(queue_t* Q) {
 		{
 			min_dis =  Q->A[i]->distance;
 			min = Q->A[i];
-			Q->A[i]->present = false;
-			Q->queue_size--;
+			index = i;
 		}
 	}
-	
+	if(Q->A[index]->present =+ true)
+	{
+		Q->A[index]->present = false;
+		Q->queue_size--;		
+	}
     return min;
 }
 
@@ -340,7 +371,10 @@ queue_node_t* queue_extract_min(queue_t* Q) {
  * @param distance New distance/key.
  */
 void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsigned int distance) {
-    Q->A[vertex_number]->distance = distance;
+    if(Q->A[vertex_number]>Q->A[distance] && (Q->A[vertex_number]->present))
+    {
+    	Q->A[vertex_number]->distance = distance;
+	}
 	return;
 }
 
@@ -351,11 +385,9 @@ void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsi
 void queue_free(queue_t* Q) {
 	for(int i = 0; i<Q->queue_size;i++)
 	{
-		Q->A[i]->distance=0;
-		Q->A[i]->present=0;
-		Q->A[i]->vertex_number=0;
+		free(Q->A[i]);
 	}
-	Q->queue_size = 0;
+	free(Q);
     return;
 }
 
