@@ -141,15 +141,15 @@ const unsigned int STEP = 100;
 // Number of experiments.
 const unsigned int NUM_EXPERIMENTS = 50;
 // Percentage of insert operations.
-const unsigned int PERCENTAGE_INSERTIONS = 10;
+const unsigned int PERCENTAGE_INSERTIONS = 40;
 // Size of the hashtable.
-const unsigned int NUM_ENTRIES = 13;    
+const unsigned int NUM_ENTRIES = 3;    
 // Test data structures?
 const bool TEST_DATA_STRUCTURES = true;
 // Number of elements for testing.
 const unsigned int NUM_ELEMENTS_FOR_TEST = 1000;
 // Output type.
-const outputEnum_t outputType = ONFILE;
+const outputEnum_t outputType = ONCONSOLE;
 //conteggio
 unsigned int CONT = 0;
 //risultato
@@ -616,10 +616,11 @@ void linkedListFree(linkedList_t* list) {
             lista=lista->prev;
             lista->next=NULL;
             del->prev=NULL;
-            free(del);
+            linkedListDelete(list,del);
         }
         free(lista);
     }
+
 }
 
 // ----- End of LINKED LIST ----- //
@@ -736,6 +737,7 @@ bool hashtableTest() {
         }
     }
 
+    hashtableFree(hash);
 
     return risultato;
 }
@@ -749,6 +751,7 @@ void hashtableFree(hashtable_t* hashtbl) {
     for(a=0;a<hashtbl->size;a++){
         linkedListFree(hashtbl->entry[a]->list);
     }
+    free(hashtbl->entry);
     free(hashtbl);
 }
 
@@ -846,6 +849,7 @@ void rbtRightRotate(rbt_t* rbt, rbtNode_t* x) {
  * @param z The RBT node to be inserted.
  */
 void rbtInsert(rbt_t* rbt, rbtNode_t* z) {
+    rbt->size++;
     rbtNode_t *y,*x;
     y = rbt->nil;
     x = rbt->root;
@@ -972,7 +976,7 @@ bool rbtTest() {
             risultato = false;
         }
     }
-
+    rbtFree(rbt);
     return risultato;
 }
 
@@ -1075,11 +1079,19 @@ bool rbtHasBst(rbt_t *rbt,rbtNode_t *x){
     return R;
 }
 bool rbtHasBstProperty(rbt_t* rbt) {
-    rbtNode_t *x;
-    bool risultato;
+    rbtNode_t *x=rbt->root;
+    bool risultato1,risultato2;
+    rbtTestStructure_t *testStr = (rbtTestStructure_t*)malloc(sizeof(rbtTestStructure_t));
+    testStr->index = 0;
+    testStr->A = malloc(sizeof(rbtTestStructure_t)*rbt->size);
+    rbtHasBstPropertyUtil(rbt,x,testStr);
+    risultato2 = isSorted(testStr->A,testStr->index);
+    free(testStr->A);
+    free(testStr);
+    
     x = rbt->root;
-    risultato = rbtHasBst(rbt,x);
-    return risultato;
+    risultato1 = rbtHasBst(rbt,x);
+    return risultato1 && risultato2;
 }
 
 /**
@@ -1089,7 +1101,13 @@ bool rbtHasBstProperty(rbt_t* rbt) {
  * @param rbtTestStructure RBT test data structure.
  */
 void rbtHasBstPropertyUtil(rbt_t* rbt, rbtNode_t* x, rbtTestStructure_t* rbtTestStructure) {
-    //lassa stare
+    if (x != rbt->nil) {
+        rbtHasBstPropertyUtil(rbt, x->left,rbtTestStructure);
+        rbtTestStructure->A[rbtTestStructure->index] = x->value;
+        rbtTestStructure->index++;
+        rbtHasBstPropertyUtil(rbt, x->right,rbtTestStructure);
+    }
+
 }
 
 /**
@@ -1139,6 +1157,7 @@ void rbtFree(rbt_t* T) {
     rbtNode_t * x = T->root;
     rbtFreeNodes(T,x);
     free(T->nil);
+
     free(T);
 }
 
@@ -1208,8 +1227,9 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
             key=rand()%MAX_RANDOM_NUMBER +1;
             nod_rbt=createRbtNode(key);
             rbtInsert(rbt,nod_rbt);
+            rbt->size++;
         }
-
+   
 
         for(int j=0;j<numSearches; j++){
             key=rand()%MAX_RANDOM_NUMBER +1;
