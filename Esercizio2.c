@@ -553,6 +553,7 @@ void linkedListInsert(linkedList_t* l, linkedListNode_t* x) {
         l->head->prev=x;
     l->head = x;
     x->prev=NULL;
+    l->size++;
 }
 
 /**
@@ -562,7 +563,7 @@ void linkedListInsert(linkedList_t* l, linkedListNode_t* x) {
  * @return First linked list node containing such value, if it exists; otherwise, NULL.
 */
 linkedListNode_t* linkedListSearch(linkedList_t* list, const int v) {
-    linkedListNode_t *x = (linkedListNode_t *) malloc(sizeof(linkedListNode_t));
+    linkedListNode_t *x;
     x = list->head;
     while(x!=NULL && x->value != v)
         x = x->next;
@@ -583,7 +584,7 @@ void linkedListDelete(linkedList_t* list, linkedListNode_t* x) {
     }
     if(x->next != NULL)
         x->next->prev=x->prev;
-
+    list->size = list->size -1;
     free(x);
 }
 
@@ -604,22 +605,14 @@ void linkedListPrint(linkedList_t* list) {
  * @param list Linked list to be freed.
  */
 void linkedListFree(linkedList_t* list) {
-    int c=0,p;
-    linkedListNode_t *del,*lista;
-    for(c=0;c<list->size;c++){
-        lista=list->head;
-        while(lista->next!=NULL){
-            lista=lista->next;
-        }
-        while(lista->prev!=NULL){
-            del=lista;
-            lista=lista->prev;
-            lista->next=NULL;
-            del->prev=NULL;
-            linkedListDelete(list,del);
-        }
-        free(lista);
+    
+    linkedListNode_t *del;
+    while(list->head!=NULL){
+        del = list->head;
+        list->head = list->head->next;
+        free(del);
     }
+        free(list);
 
 }
 
@@ -725,7 +718,7 @@ bool hashtableTest() {
     for (int i = 0; i< NUM_ELEMENTS_FOR_TEST;i++){
         A[i]=i*i;
     }
-    for (int i = 0; i < hash->size ; i++){
+    for (int i = 0; i < NUM_ELEMENTS_FOR_TEST ; i++){
         hashtableInsert(hash,A[i]);
     }
     for (int j=0;j<NUM_ELEMENTS_FOR_TEST;j++){
@@ -750,6 +743,7 @@ void hashtableFree(hashtable_t* hashtbl) {
     int a;
     for(a=0;a<hashtbl->size;a++){
         linkedListFree(hashtbl->entry[a]->list);
+        free(hashtbl->entry[a]);
     }
     free(hashtbl->entry);
     free(hashtbl);
@@ -961,7 +955,7 @@ void rbtInOrder(rbt_t* rbt, rbtNode_t* x) {
  * @return True if it is correct; otherwise, false.
  */
 bool rbtTest() {
-    bool risultato;
+    bool risultato,risultato1,risultato2;
     rbt_t * rbt = createRbt();
     rbtNode_t *nodo;
     int key = 0;
@@ -976,8 +970,10 @@ bool rbtTest() {
             risultato = false;
         }
     }
+    risultato1 = isRbt(rbt);
+    risultato2 = rbtHasBstProperty(rbt);
     rbtFree(rbt);
-    return risultato;
+    return risultato && risultato1 && risultato2;
 }
 
 /**
@@ -1019,44 +1015,44 @@ bool isRbtp4(rbt_t * rbt,rbtNode_t *x){
 }
 
 bool isRbt(rbt_t* rbt) {
-    bool risultato;
+    bool risultato1, risultato2, risultato3, risultato4, risultato5;
     rbtNode_t *node = rbt->root;
     //propriet� 1: ogni nodo � rosso o nero
-    risultato = isRbtp1(rbt,node);
+    risultato1 = isRbtp1(rbt,node);
 
     //propriet� 2: la radice � nera
     if(rbt->root->color == 'B'){
-        risultato = true;
+        risultato2 = true;
     }else{
-        risultato = false;
+        risultato2 = false;
     }
 
 
     //propriet� 3: ogni foglia esterna = T.nil � nera
 
     if(rbt->nil->color == 'B'){
-        risultato = true;
+        risultato3 = true;
     }else{
-        risultato = false;
+        risultato3 = false;
     }
 
 
     node = rbt->root;
     //propriet� 4: se un nodo � rosso entrambi i figli sono neri
-    risultato = isRbtp4(rbt,node);
+    risultato4 = isRbtp4(rbt,node);
 
     
 
 
     //propriet� 5: altezza nera rispettata
     if(rbtComputeBlackHeight){
-        risultato = true;
+        risultato5 = true;
     }else{
-        risultato = false;
+        risultato5 = false;
     }
 
 
-    return risultato;
+    return risultato1 && risultato2 && risultato3 && risultato4 && risultato5;
 
 }
 
@@ -1123,7 +1119,7 @@ int rbtComputeBlackHeight(rbt_t* rbt, rbtNode_t* x) {
     else{
         r=rbtComputeBlackHeight(rbt,x->right);
         l=rbtComputeBlackHeight(rbt,x->left);
-        if(l!=r)
+        if(l == -1 || r == -1 || l!=r)
             return -1;
         else
         {
@@ -1157,7 +1153,6 @@ void rbtFree(rbt_t* T) {
     rbtNode_t * x = T->root;
     rbtFreeNodes(T,x);
     free(T->nil);
-
     free(T);
 }
 
