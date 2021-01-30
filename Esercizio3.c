@@ -198,6 +198,12 @@ min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const un
  * @param y Second node.
  */
 void min_heap_swap(min_heap_node_t** x, min_heap_node_t** y) {
+	int x_dist = (*x)->distance;
+	int x_ver_n = (*x)->vertex_number;
+	(*x)->distance = (*y)->distance;
+	(*x)->vertex_number = (*y)->vertex_number;
+	(*y)->distance = x_dist;
+	(*y)->vertex_number = x_ver_n;
     return;
 }
 
