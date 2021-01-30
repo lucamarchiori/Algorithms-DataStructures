@@ -286,7 +286,20 @@ min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
  * @param vertex_number Vertex number.
  * @param distance New distance/key.
  */
-void min_heap_decrease_key(min_heap_t* H, const unsigned int vertex_number, const unsigned int distance) {
+void min_heap_decrease_key(min_heap_t* H, /*const*/ unsigned int vertex_number, const unsigned int distance) {
+	if(distance>H->A[vertex_number]->distance)
+	{
+		exit(1);
+	}
+	else
+	{
+		H->A[vertex_number]->distance=distance;
+		while(vertex_number > 0 && H->A[heap_parent_index(vertex_number)]->vertex_number > H->A[vertex_number]->vertex_number)
+		{
+			min_heap_swap(&H->A[vertex_number], &H->A[heap_parent_index(vertex_number)]);
+			vertex_number = heap_parent_index(vertex_number);
+		}
+	}
     return;
 }
 
