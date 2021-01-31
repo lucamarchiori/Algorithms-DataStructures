@@ -1,6 +1,6 @@
 /**
  * @brief Problem 1, Laboratory of Algorithms and Data Structures.
- * @author Marchiori Luca (luca01.marchiori@edu.unife.it)
+ * @author Marchiori Luca
  * @version Student
  */
 
