@@ -5,6 +5,46 @@
  * @version Student
  */
 
+/*
+APPUNTI LEZIONE
+
+	IMPLEMENTAZIONI:
+		1) MINHEAP
+		2) ARRAY SENZA STRUTTURA 
+	
+	Misurare il tempo medio al crescere della dimensione del grafo e confrontale le due implementazioni.
+	Sorgente fissata.
+	Densitá variabile. Per ogni densitá si crea un grafico diverso che confronta i tempi delle due implementazioni.
+	
+	COSTRUZIONE DEL GRAFO:
+	Creo struttura di dimensione massima a 1000 e poi riempo in parte (es fino a 100)
+	Per ogni coppia i-j da 1 a 100 (dimensione stabilita) decido probabilisticamente se esiste l'arco o no.
+	Se arco esiste allora:
+		1) Assegno all'arco un peso casuale
+		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
+	
+	CODE DI PRIORITÀ COME ARRAY:
+	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
+	Decrease key = cambiare prioritá del vertice x = accedi in posizione x e assegna vuovo peso.
+	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
+	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
+	
+	CODE DI PRIORITÀ COME MINHEAP:
+	Min heap quindi é semi ordinata su prioritá vertice (non sul nome). Ogni nodo della minheap é una coppia.
+	Extract min = estrai il primo elemento e ribilancia
+	Decrease key = cambiare prioritá del vertice x = per evitare di scorrere tutto l`array,
+	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
+	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
+	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
+	Per cambiare prioritá devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
+	
+	DIJKSTRA:
+	Dijkstra lavora da una sorgente fissata (Vertice 0)
+	Risultato = albero cammini minimi + pesi sui vertici per raggiungerli dalla sorgente
+	Array dove la posizione corrisponde al numero del vertice. Ogni casella é la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
+	Crea una coda per ogni implementazione.
+/*
+
 // ##### LIBRARIES ##### //
 
 #include <stdio.h>      // input-output library.
@@ -480,6 +520,14 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
  * @param G Graph.
  */
 void graph_free(graph_t* G) {
+	for(int i = 0; i<G->number_vertices; i++)
+    {
+    	for(int j = 0; j<G->number_vertices; j++)
+    	{
+    		//LIBERA
+    	}
+    	
+    }
     return;
 }
 
@@ -620,7 +668,7 @@ int main() {
         for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
-            
+            graph_print(&G);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
