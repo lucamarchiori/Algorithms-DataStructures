@@ -1017,10 +1017,10 @@ bool isRbtp4(rbt_t * rbt,rbtNode_t *x){
 bool isRbt(rbt_t* rbt) {
     bool risultato1, risultato2, risultato3, risultato4, risultato5;
     rbtNode_t *node = rbt->root;
-    //propriet� 1: ogni nodo � rosso o nero
+    //propriet? 1: ogni nodo ? rosso o nero
     risultato1 = isRbtp1(rbt,node);
 
-    //propriet� 2: la radice � nera
+    //propriet? 2: la radice ? nera
     if(rbt->root->color == 'B'){
         risultato2 = true;
     }else{
@@ -1028,7 +1028,7 @@ bool isRbt(rbt_t* rbt) {
     }
 
 
-    //propriet� 3: ogni foglia esterna = T.nil � nera
+    //propriet? 3: ogni foglia esterna = T.nil ? nera
 
     if(rbt->nil->color == 'B'){
         risultato3 = true;
@@ -1038,13 +1038,13 @@ bool isRbt(rbt_t* rbt) {
 
 
     node = rbt->root;
-    //propriet� 4: se un nodo � rosso entrambi i figli sono neri
+    //propriet? 4: se un nodo ? rosso entrambi i figli sono neri
     risultato4 = isRbtp4(rbt,node);
 
     
 
 
-    //propriet� 5: altezza nera rispettata
+    //propriet? 5: altezza nera rispettata
     if(rbtComputeBlackHeight){
         risultato5 = true;
     }else{
@@ -1222,7 +1222,6 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
             key=rand()%MAX_RANDOM_NUMBER +1;
             nod_rbt=createRbtNode(key);
             rbtInsert(rbt,nod_rbt);
-            rbt->size++;
         }
    
 
@@ -1250,4 +1249,5 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
 // ----- End of CORE FUNCTIONS ----- //
 
 // ##### End of IMPLEMENTATION OF THE FUNCTIONS ##### //
+
 
