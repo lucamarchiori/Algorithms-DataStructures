@@ -205,6 +205,7 @@ FILE* output_pointer;
  * @return Parent index.
  */
 int heap_parent_index(const unsigned int i) {
+	 //OK - CORRETTO
     return (i-1)>>1; // Subtract 1 from i, then shift right the bit-representation by 1 position; English version of the CLRS text-book, pg. 152.
 }
 
@@ -214,6 +215,7 @@ int heap_parent_index(const unsigned int i) {
  * @return Left index.
  */
 int heap_left_index(const unsigned int i) {
+	 //OK - CORRETTO
     return (i<<1)+1; // Shift left the bit-representation of i, then add 1 as lower bit; English version of the CLRS text-book, pg. 152.
 }
 
@@ -223,6 +225,7 @@ int heap_left_index(const unsigned int i) {
  * @return Right index.
  */
 int heap_right_index(const unsigned int i) {
+	 //OK - CORRETTO
     return (i<<1)+2; // Shift left the bit-representation of i, then add 2 as lower bit; English version of the CLRS text-book, pg. 152.
 }
 
@@ -233,7 +236,7 @@ int heap_right_index(const unsigned int i) {
  * @return Newly created node.
  */
 min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const unsigned int distance) {
-    min_heap_node_t* nodo;
+	min_heap_node_t *nodo = (min_heap_node_t *) malloc(sizeof(min_heap_node_t));
     nodo->vertex_number = vertex_number;
     nodo->distance = distance;
 	return nodo;
@@ -326,14 +329,15 @@ min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
  * @param distance New distance/key.
  */
 void min_heap_decrease_key(min_heap_t* H, /*const*/ unsigned int vertex_number, const unsigned int distance) {
-	if(distance>H->A[vertex_number]->distance)
+	if(distance>(H->A[vertex_number]->distance))
 	{
 		exit(1);
 	}
 	else
 	{
+		//VA IMPLEMENTATO TOGLIENDO WHILE E USANDO P
 		H->A[vertex_number]->distance=distance;
-		while(vertex_number > 0 && H->A[heap_parent_index(vertex_number)]->vertex_number > H->A[vertex_number]->vertex_number)
+		while(vertex_number > 0 && H->A[heap_parent_index(vertex_number)]->distance > H->A[vertex_number]->distance)
 		{
 			min_heap_swap(&H->A[vertex_number], &H->A[heap_parent_index(vertex_number)]);
 			vertex_number = heap_parent_index(vertex_number);
@@ -365,7 +369,7 @@ void min_heap_free(min_heap_t* H) {
  * @return Newly create node.
  */
 queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	queue_node_t* nodo;
+	queue_node_t *nodo = (queue_node_t *) malloc(sizeof(queue_node_t));
 	nodo->distance = distance;
 	nodo->vertex_number = vertex_number;
 	nodo->present = true;
@@ -460,6 +464,7 @@ void queue_free(queue_t* Q) {
  * @param x Adjacency list node to be inserted.
  */
 void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
+	 //OK - CORRETTO
     x->next = L->head;
     L->head = x;
 }
@@ -471,8 +476,8 @@ void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
  * @return Newly created node.
  */
 adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned int weight) {
-	adj_list_node_t* nodo;
-	nodo->target = target;
+	adj_list_node_t *nodo = (adj_list_node_t *) malloc(sizeof(adj_list_node_t));
+    nodo->target = target;
 	nodo->weight = weight;
     return nodo;
 }
@@ -485,6 +490,10 @@ adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned 
  * @param weight Weight of the edge.
  */
 void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int target, const unsigned int weight) {
+	//adj_list_node_t n = adj_list_create_node(target,weight);
+	//adj_list_insert_node(G->adj,&n);
+	//adj_list_insert_node(G->adj,source);
+	//adj_list_node_t nodo = adj_list_create_node(target,weight);
 	return;
 }
 
@@ -495,19 +504,23 @@ void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int ta
  * @return Newly create graph.
  */
 graph_t graph_create(unsigned const int number_vertices, const double edge_prob) {
-	
     graph_t G;
+    G.adj = malloc(number_vertices * sizeof(int));
     int prob = 0;
+    unsigned int weight;
+    adj_list_node_t* nodo;
     G.number_vertices = number_vertices;
-    for(int i = 0; i<number_vertices; i++)
+    for(unsigned int i = 0; i<number_vertices; i++)
     {
-    	for(int j = 0; j<number_vertices; j++)
+    	for(unsigned int j = 0; j<number_vertices; j++)
     	{
     		prob = rand()%100;
     		if(edge_prob<prob)
 			{
-				//adj_list_node_t nodo = adj_list_create_node(i,)
-				graph_add_edge(&G,i,j,0);
+				weight = rand()%MAX_WEIGHT;
+				nodo = adj_list_create_node(j,50);
+				adj_list_insert_node(G.adj,nodo);
+				graph_add_edge(&G,i,j,weight);
 			}
 		}
     	
@@ -585,7 +598,7 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param source Source vertex number.
  */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-	queue_t coda = queue_create(G->number_vertices);
+	//queue_t coda = queue_create(G->number_vertices);
 
 	/*
 	for(int i=0;i<G->number_vertices;i++)
