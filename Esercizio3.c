@@ -490,10 +490,6 @@ adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned 
  * @param weight Weight of the edge.
  */
 void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int target, const unsigned int weight) {
-	//adj_list_node_t n = adj_list_create_node(target,weight);
-	//adj_list_insert_node(G->adj,&n);
-	//adj_list_insert_node(G->adj,source);
-	//adj_list_node_t nodo = adj_list_create_node(target,weight);
 	return;
 }
 
@@ -505,22 +501,25 @@ void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int ta
  */
 graph_t graph_create(unsigned const int number_vertices, const double edge_prob) {
     graph_t G;
+    G.number_vertices = number_vertices;
     G.adj = malloc(number_vertices * sizeof(int));
     int prob = 0;
-    unsigned int weight;
+    //unsigned int weight;
     adj_list_node_t* nodo;
-    G.number_vertices = number_vertices;
+
     for(unsigned int i = 0; i<number_vertices; i++)
     {
+    	nodo = adj_list_create_node(i,INT_MAX);
+    	adj_list_insert_node(&G.adj[i],NULL);  	
+
     	for(unsigned int j = 0; j<number_vertices; j++)
     	{
     		prob = rand()%100;
     		if(edge_prob<prob)
 			{
-				weight = rand()%MAX_WEIGHT;
-				nodo = adj_list_create_node(j,50);
-				adj_list_insert_node(G.adj,nodo);
-				graph_add_edge(&G,i,j,weight);
+				nodo = adj_list_create_node(i,INT_MAX);
+				graph_add_edge(&G,i,j,INT_MAX);
+				adj_list_insert_node(&G.adj[i], nodo);
 			}
 		}
     	
@@ -682,7 +681,7 @@ int main() {
         for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
-            //graph_print(&G);
+            graph_print(&G);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
