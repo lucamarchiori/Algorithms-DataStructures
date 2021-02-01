@@ -464,7 +464,6 @@ void queue_free(queue_t* Q) {
  * @param x Adjacency list node to be inserted.
  */
 void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
-	 //OK - CORRETTO
     x->next = L->head;
     L->head = x;
 }
@@ -504,18 +503,15 @@ void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int ta
 graph_t graph_create(unsigned const int number_vertices, const double edge_prob) {
     graph_t G;
     G.number_vertices = number_vertices;
-    G.adj = malloc(number_vertices * sizeof(int));
+    G.adj = malloc(number_vertices * sizeof(adj_list_node_t));
     int prob = 0;
     int weight;
-    adj_list_node_t* nodo;
     for(int i = 0; i<number_vertices; i++)
     {
-    	nodo = adj_list_create_node(i,INT_MAX);
     	G.adj[i].head = NULL;
     	for(int j = 0; j<number_vertices; j++)
     	{
     		prob = rand()%100;
-
 				if(i!=j && (prob>edge_prob))
 				{
                     weight = rand()%MAX_WEIGHT;
@@ -608,13 +604,14 @@ void dijkstra(graph_t* G, unsigned const int source) {
 	
 */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-	queue_t coda = queue_create(G->number_vertices);
-    queue_node_t* sorgente = queue_create_node(0,0);
-    coda.A[0]=sorgente;
-    // for(int i=0;i<G->number_vertices; i++)
-    // {
-    //     coda.A[i*sizeof(queue_node_t)] = G->adj[i].
-    // }
+	//queue_t coda = queue_create(G->number_vertices);
+    //adj_list_node_t* nodo;
+    //coda.A[0]=source;
+    for(int i=0;i<G->number_vertices; i++)
+    {
+       //coda.A[i]->distance=INT_MAX;
+       // coda.A[i]=nodo->;
+    }
 
 
     // int aux;
