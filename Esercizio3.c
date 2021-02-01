@@ -490,6 +490,8 @@ adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned 
  * @param weight Weight of the edge.
  */
 void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int target, const unsigned int weight) {
+    adj_list_node_t* nodo = adj_list_create_node(target,weight);
+    adj_list_insert_node(&G->adj[source], nodo);
 	return;
 }
 
@@ -517,10 +519,8 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
 
 				if(i!=j && (prob>edge_prob))
 				{
-					nodo = adj_list_create_node(j,INT_MAX);	
-                    adj_list_insert_node(&G.adj[i], nodo);
-
-				    //graph_add_edge(&G,i,j,INT_MAX);
+                    weight = rand()%MAX_WEIGHT;
+                    graph_add_edge(&G,i,j,weight);
 				}
 		}
     	
