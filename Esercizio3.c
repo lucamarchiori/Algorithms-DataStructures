@@ -287,7 +287,7 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  */
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
-	H.A = malloc(array_length * sizeof(int));
+	H.A = malloc(array_length * sizeof(min_heap_node_t**));
     H.array_length = array_length;
     H.heap_size=0;   
     return H;
@@ -385,7 +385,7 @@ queue_t queue_create(const unsigned int array_length) {
     queue_t Q;
     Q.array_length = array_length;
     Q.queue_size = 0;
-    Q.A = malloc(array_length * sizeof(int));
+    Q.A = malloc(array_length * sizeof(queue_node_t**));
     return Q;
 }
 
@@ -508,7 +508,6 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     int prob = 0;
     int weight;
     adj_list_node_t* nodo;
-
     for(int i = 0; i<number_vertices; i++)
     {
     	nodo = adj_list_create_node(i,INT_MAX);
@@ -599,8 +598,39 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param G Graph.
  * @param source Source vertex number.
  */
+
+
+/*
+	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
+	Decrease key = cambiare priorit? del vertice x = accedi in posizione x e assegna vuovo peso.
+	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
+	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
+	
+*/
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
 	queue_t coda = queue_create(G->number_vertices);
+    queue_node_t* sorgente = queue_create_node(0,0);
+    coda.A[0]=sorgente;
+    // for(int i=0;i<G->number_vertices; i++)
+    // {
+    //     coda.A[i*sizeof(queue_node_t)] = G->adj[i].
+    // }
+
+
+    // int aux;
+    // for (int count = 0; count < ((G->number_vertices) - 1); count++)
+    //     {
+
+    //         int aux = minDistance(mdist, vset, V);
+    //         vset[aux] = 1;
+
+    //         for (int v = 0; v < V; v++)
+    //         {
+    //             if (!vset[v] && graph->edges[aux][v] != INT_MAX &&
+    //                 mdist[aux] + graph->edges[aux][v] < mdist[v])
+    //                 mdist[v] = mdist[aux] + graph->edges[aux][v];
+    //         }
+    //     }
 	/*
 	for(int i=0;i<G->number_vertices;i++)
 	{
