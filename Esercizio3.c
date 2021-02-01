@@ -177,11 +177,11 @@ const time_t RANDOM_SEED = 20;
 // Minimum number of vertices.
 const unsigned int MIN_NUM_VERTICES = 10;
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 1000;
+const unsigned int MAX_NUM_VERTICES = 250; //1000
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 50; //50
+const unsigned int NUM_EXPERIMENTS = 50; 
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
@@ -554,6 +554,7 @@ void graph_free(graph_t* G) {
  * @param G Graph.
  */
 void graph_print(graph_t* G) {
+
     fprintf(stdout, "G->number_vertices=%d\n", G->number_vertices);
     for (int u=0; u<G->number_vertices; u++) {
         fprintf(stdout, "adj[u=%d] ==> ", u);
@@ -567,6 +568,7 @@ void graph_print(graph_t* G) {
             x = x->next;
         }
     }
+    return;
 }
 
 /**
@@ -684,6 +686,7 @@ int main() {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
             graph_print(&G);
+            //print_distances(0,10);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
