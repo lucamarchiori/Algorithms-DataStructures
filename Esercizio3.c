@@ -175,17 +175,17 @@ typedef enum output_enum_t {
 // Random seed (important for reproducibility).
 const time_t RANDOM_SEED = 20;
 // Minimum number of vertices.
-const unsigned int MIN_NUM_VERTICES = 10;
+const unsigned int MIN_NUM_VERTICES = 10; //10
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 250; //1000
+const unsigned int MAX_NUM_VERTICES = 10; //1000
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 50; 
+const unsigned int NUM_EXPERIMENTS = 5; //50 
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
-const unsigned int EDGE_PROBABILITY = 1.0;
+const unsigned int EDGE_PROBABILITY = 50; //1.0
 // Maximum weight.
 const unsigned int MAX_WEIGHT = 1000;
 // Output type.
@@ -514,15 +514,14 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     	for(int j = 0; j<number_vertices; j++)
     	{
     		prob = rand()%100;
-//   		 if(edge_prob<prob)
-//			 {
-//				if(i!=j)
-//				{
-//					nodo = adj_list_create_node(j,INT_MAX);
-//					adj_list_insert_node(&G.adj[i], nodo);
-//					//graph_add_edge(&G,i,j,INT_MAX);
-//				}
-//			 }
+
+				if(i!=j && (prob>edge_prob))
+				{
+					nodo = adj_list_create_node(j,INT_MAX);	
+                    adj_list_insert_node(&G.adj[i], nodo);
+
+				    //graph_add_edge(&G,i,j,INT_MAX);
+				}
 		}
     	
 	}
