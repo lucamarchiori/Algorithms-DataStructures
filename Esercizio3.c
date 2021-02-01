@@ -600,8 +600,7 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param source Source vertex number.
  */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-	//queue_t coda = queue_create(G->number_vertices);
-
+	queue_t coda = queue_create(G->number_vertices);
 	/*
 	for(int i=0;i<G->number_vertices;i++)
 	{
@@ -685,7 +684,6 @@ int main() {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
             graph_print(&G);
-            //print_distances(0,10);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
