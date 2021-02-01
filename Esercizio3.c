@@ -14,7 +14,7 @@ APPUNTI LEZIONE
 	
 	Misurare il tempo medio al crescere della dimensione del grafo e confrontale le due implementazioni.
 	Sorgente fissata.
-	Densitá variabile. Per ogni densitá si crea un grafico diverso che confronta i tempi delle due implementazioni.
+	Densit? variabile. Per ogni densit? si crea un grafico diverso che confronta i tempi delle due implementazioni.
 	
 	COSTRUZIONE DEL GRAFO:
 	Creo struttura di dimensione massima a 1000 e poi riempo in parte (es fino a 100)
@@ -22,28 +22,28 @@ APPUNTI LEZIONE
 	Se arco esiste allora:
 		1) Assegno all'arco un peso casuale
 		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
-	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non puó essere superato.
+	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non pu? essere superato.
 	
-	CODE DI PRIORITÀ COME ARRAY:
+	CODE DI PRIORIT? COME ARRAY:
 	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
-	Decrease key = cambiare prioritá del vertice x = accedi in posizione x e assegna vuovo peso.
+	Decrease key = cambiare priorit? del vertice x = accedi in posizione x e assegna vuovo peso.
 	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
 	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
 	
-	CODE DI PRIORITÀ COME MINHEAP:
-	Min heap quindi é semi ordinata su prioritá vertice (non sul nome). Ogni nodo della minheap é una coppia.
-	Decrease key = cambiare prioritá del vertice x = per evitare di scorrere tutto l`array,
+	CODE DI PRIORIT? COME MINHEAP:
+	Min heap quindi ? semi ordinata su priorit? vertice (non sul nome). Ogni nodo della minheap ? una coppia.
+	Decrease key = cambiare priorit? del vertice x = per evitare di scorrere tutto l`array,
 	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
 	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
 	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
-	Per cambiare prioritá devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
+	Per cambiare priorit? devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
 	Extract min = estrai il primo elemento, ribilancia con minheapify e aggiorna array P
 	Swap = prevede sia scambio su array heap che scambio su array P
 	
 	DIJKSTRA:
 	Dijkstra lavora da una sorgente fissata (Vertice 0)
 	Risultato = albero cammini minimi + pesi sui vertici per raggiungerli dalla sorgente
-	Array dove la posizione corrisponde al numero del vertice. Ogni casella é la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
+	Array dove la posizione corrisponde al numero del vertice. Ogni casella ? la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
 	Crea una coda per ogni implementazione.
 	
 	FUNZIONI ANTAGONISTE:
@@ -260,11 +260,11 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
 	int l = heap_left_index(i);
 	int r = heap_right_index(i);
 	int smallest = i;
-	if(l<=H->heap_size && H->A[l]<H->A[i])
+	if(l<=H->heap_size && (H->A[l])<(H->A[i]))
 	{
 		smallest = l;
 	}
-	if(r<=H->heap_size && H->A[r]<H->A[smallest])
+	if(r<=H->heap_size && (H->A[r])<(H->A[smallest]))
 	{
 		smallest = r;
 	}  
@@ -310,11 +310,13 @@ bool min_heap_is_empty(min_heap_t* H) {
 min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
 	if(!min_heap_is_empty(H))
 	{
-		H->heap_size--;
-		//BISOGNA BILANCIARE
 		min_heap_node_t* min = H->A[0];
+		H->A[0] = H->A[H->heap_size];
+		H->heap_size--;
+		min_heap_heapify(H, 0);
     	return min;
 	}
+	exit(1);
 }
 
 /**
@@ -693,4 +695,5 @@ int main() {
     
     return 0;
 }
+
 
