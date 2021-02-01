@@ -181,7 +181,7 @@ const unsigned int MAX_NUM_VERTICES = 1000;
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 50;
+const unsigned int NUM_EXPERIMENTS = 50; //50
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
@@ -504,23 +504,25 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     G.number_vertices = number_vertices;
     G.adj = malloc(number_vertices * sizeof(int));
     int prob = 0;
-    //unsigned int weight;
+    int weight;
     adj_list_node_t* nodo;
 
-    for(unsigned int i = 0; i<number_vertices; i++)
+    for(int i = 0; i<number_vertices; i++)
     {
     	nodo = adj_list_create_node(i,INT_MAX);
-    	adj_list_insert_node(&G.adj[i],NULL);  	
-
-    	for(unsigned int j = 0; j<number_vertices; j++)
+    	G.adj[i].head = NULL;
+    	for(int j = 0; j<number_vertices; j++)
     	{
     		prob = rand()%100;
-    		if(edge_prob<prob)
-			{
-				nodo = adj_list_create_node(i,INT_MAX);
-				graph_add_edge(&G,i,j,INT_MAX);
-				adj_list_insert_node(&G.adj[i], nodo);
-			}
+//   		 if(edge_prob<prob)
+//			 {
+//				if(i!=j)
+//				{
+//					nodo = adj_list_create_node(j,INT_MAX);
+//					adj_list_insert_node(&G.adj[i], nodo);
+//					//graph_add_edge(&G,i,j,INT_MAX);
+//				}
+//			 }
 		}
     	
 	}
