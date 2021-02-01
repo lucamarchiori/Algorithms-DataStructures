@@ -466,6 +466,8 @@ void queue_free(queue_t* Q) {
 void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
     x->next = L->head;
     L->head = x;
+   	return;
+
 }
 
 /**
@@ -604,38 +606,29 @@ void dijkstra(graph_t* G, unsigned const int source) {
 	
 */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-	//queue_t coda = queue_create(G->number_vertices);
-    //adj_list_node_t* nodo;
-    //coda.A[0]=source;
+ 	queue_t coda = queue_create(G->number_vertices);
+    queue_node_t* nodo;
     for(int i=0;i<G->number_vertices; i++)
     {
-       //coda.A[i]->distance=INT_MAX;
-       // coda.A[i]=nodo->;
+        adj_list_node_t* x = G->adj[i].head;
+
+            if (x->next)
+            {
+                nodo=queue_create_node(x->target,x->weight);
+                coda.A[i]=nodo;
+                coda.queue_size++;
+            }
+            else
+            {
+                nodo=queue_create_node(x->target,x->weight);
+                coda.A[i]=nodo;
+                coda.queue_size++;
+
+            }
+            x = x->next;
+        
     }
-
-
-    // int aux;
-    // for (int count = 0; count < ((G->number_vertices) - 1); count++)
-    //     {
-
-    //         int aux = minDistance(mdist, vset, V);
-    //         vset[aux] = 1;
-
-    //         for (int v = 0; v < V; v++)
-    //         {
-    //             if (!vset[v] && graph->edges[aux][v] != INT_MAX &&
-    //                 mdist[aux] + graph->edges[aux][v] < mdist[v])
-    //                 mdist[v] = mdist[aux] + graph->edges[aux][v];
-    //         }
-    //     }
-	/*
-	for(int i=0;i<G->number_vertices;i++)
-	{
-		queue_node_t nodo = queue_create_node(i,INT_MAX);
-	}
-	  
-	  
-    return;*/
+    return;
 }
 
 /**
