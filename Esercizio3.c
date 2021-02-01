@@ -22,6 +22,7 @@ APPUNTI LEZIONE
 	Se arco esiste allora:
 		1) Assegno all'arco un peso casuale
 		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
+	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non puó essere superato.
 	
 	CODE DI PRIORITÀ COME ARRAY:
 	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
@@ -31,19 +32,25 @@ APPUNTI LEZIONE
 	
 	CODE DI PRIORITÀ COME MINHEAP:
 	Min heap quindi é semi ordinata su prioritá vertice (non sul nome). Ogni nodo della minheap é una coppia.
-	Extract min = estrai il primo elemento e ribilancia
 	Decrease key = cambiare prioritá del vertice x = per evitare di scorrere tutto l`array,
 	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
 	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
 	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
 	Per cambiare prioritá devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
+	Extract min = estrai il primo elemento, ribilancia con minheapify e aggiorna array P
+	Swap = prevede sia scambio su array heap che scambio su array P
 	
 	DIJKSTRA:
 	Dijkstra lavora da una sorgente fissata (Vertice 0)
 	Risultato = albero cammini minimi + pesi sui vertici per raggiungerli dalla sorgente
 	Array dove la posizione corrisponde al numero del vertice. Ogni casella é la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
 	Crea una coda per ogni implementazione.
-/*
+	
+	FUNZIONI ANTAGONISTE:
+	1) Le due implementazioni devono dare gli stessi risultati in termini di pesi e di albero di cammini minimi
+	2) Creazione manaule di un grafo con pesi e archi prestabiliti e controllo che il cammino minimo risultate sia corretto
+	
+	*/
 
 // ##### LIBRARIES ##### //
 
@@ -238,12 +245,9 @@ min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const un
  * @param y Second node.
  */
 void min_heap_swap(min_heap_node_t** x, min_heap_node_t** y) {
-	int x_dist = (*x)->distance;
-	int x_ver_n = (*x)->vertex_number;
-	(*x)->distance = (*y)->distance;
-	(*x)->vertex_number = (*y)->vertex_number;
-	(*y)->distance = x_dist;
-	(*y)->vertex_number = x_ver_n;
+    min_heap_node_t* temp = *x;
+    *x = *y;
+    *y = temp;
     return;
 }
 
@@ -280,12 +284,9 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  */
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
+	H.A = malloc(array_length * sizeof(int));
     H.array_length = array_length;
-    for(int i = (H.array_length)/2; i>1; i--)
-    {
-    	min_heap_heapify(&H, i);
-	}
-    
+    H.heap_size=0;   
     return H;
 }
 
@@ -296,13 +297,9 @@ min_heap_t min_heap_create(const unsigned int array_length) {
  */
 bool min_heap_is_empty(min_heap_t* H) {
 	if(H->heap_size == 0)
-	{
 	    return true;
-	}
 	else
-	{
 		return false;
-	}
 }
 
 /**
@@ -382,6 +379,7 @@ queue_t queue_create(const unsigned int array_length) {
     queue_t Q;
     Q.array_length = array_length;
     Q.queue_size = 0;
+    Q.A = malloc(array_length * sizeof(int));
     return Q;
 }
 
@@ -405,7 +403,7 @@ bool queue_is_empty(queue_t* Q) {
 queue_node_t* queue_extract_min(queue_t* Q) {
 	queue_node_t* min = Q->A[0];
 	int index = 0;
-	int min_dis = Q->A[0]->distance;
+	int min_dis = min->distance;
 	for(int i=0; i<Q->queue_size; i++)
 	{
 		if(Q->A[i]->present && Q->A[i]->distance<min_dis)
@@ -415,10 +413,10 @@ queue_node_t* queue_extract_min(queue_t* Q) {
 			index = i;
 		}
 	}
-	if(Q->A[index]->present =+ true)
+	if(Q->A[index]->present == true)
 	{
 		Q->A[index]->present = false;
-		Q->queue_size--;		
+		Q->queue_size--;
 	}
     return min;
 }
@@ -585,8 +583,9 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param source Source vertex number.
  */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
-	/*
 	queue_t coda = queue_create(G->number_vertices);
+
+	/*
 	for(int i=0;i<G->number_vertices;i++)
 	{
 		queue_node_t nodo = queue_create_node(i,INT_MAX);
@@ -668,7 +667,7 @@ int main() {
         for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
-            graph_print(&G);
+            //graph_print(&G);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
