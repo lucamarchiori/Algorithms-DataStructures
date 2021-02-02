@@ -614,7 +614,6 @@ void linkedListFree(linkedList_t* list) {
         free(del);
     }
         free(list);
-
 }
 
 // ----- End of LINKED LIST ----- //
@@ -767,7 +766,6 @@ rbt_t* createRbt() {
     rbt->nil->color = 'B';
     rbt->root=rbt->nil;
     return rbt;
-
 }
 
 /**
@@ -945,25 +943,30 @@ void rbtInOrder(rbt_t* rbt, rbtNode_t* x) {
  * @return True if it is correct; otherwise, false.
  */
 bool rbtTest() {
-    bool risultato,risultato1,risultato2;
+    bool test, testSearch;
     rbt_t * rbt = createRbt();
     rbtNode_t *nodo;
-    int key = 0;
     for (int i = 0; i< NUM_ELEMENTS_FOR_TEST ;i++){
-        key = i;
-        nodo = createRbtNode(key);
+        nodo = createRbtNode(i);
         rbtInsert(rbt,nodo);
-        nodo = rbtSearch(rbt,key);
-        if(nodo->value == key){
-            risultato = true;
+    }
+
+    for(int j=0;j<NUM_ELEMENTS_FOR_TEST;j++)
+    {
+        nodo = rbtSearch(rbt,j);
+        if(nodo->value == j){
+            testSearch = true;
         }else{
-            risultato = false;
+            testSearch = false;
         }
     }
-    risultato1 = isRbt(rbt);
-    risultato2 = rbtHasBstProperty(rbt);
+    if(testSearch && isRbt(rbt) && rbtHasBstProperty(rbt))
+         test = true;
+    else
+        test = false;
+
     rbtFree(rbt);
-    return risultato && risultato1 && risultato2;
+    return test;
 }
 
 /**
@@ -971,69 +974,10 @@ bool rbtTest() {
  * @param rbt Tree to be checked.
  * @return True if it is; otherwise, false.
  */
-
-bool isRbtp1(rbt_t * rbt,rbtNode_t *x){
-    bool result;
-    if (x != rbt->nil ){
-        if(x->color == 'R' || x->color == 'B'){
-        isRbtp1(rbt, x->left);
-        isRbtp1(rbt, x->right);
-        CONT++;
-        result = true;
-        }else{
-            result = false;
-        }
-    }
-    return result;
-}
-bool isRbtp4(rbt_t * rbt,rbtNode_t *x){
-    if (x != rbt->nil){
-    if(x->color == 'R')
-    {
-        if(x->left->color == 'B' && x->right->color == 'B')
-        {
-            R = true;
-        }
-        else
-        {
-            R = false;
-        }
-    }
-    isRbtp4(rbt, x->left);
-    isRbtp4(rbt, x->right);
-    }
-    return R;
-}
-
 bool isRbt(rbt_t* rbt) {
-    bool risultato1, risultato2, risultato3, risultato4;
-    rbtNode_t *node = rbt->root;
-    //propriet? 1: ogni nodo ? rosso o nero
-    risultato1 = isRbtp1(rbt,node);
-
-    //propriet? 2: la radice ? nera
-    if(rbt->root->color == 'B'){
-        risultato2 = true;
-    }else{
-        risultato2 = false;
-    }
-
-
-    //propriet? 3: ogni foglia esterna = T.nil ? nera
-
-    if(rbt->nil->color == 'B'){
-        risultato3 = true;
-    }else{
-        risultato3 = false;
-    }
-
-
-    node = rbt->root;
-    //propriet? 4: se un nodo ? rosso entrambi i figli sono neri
-    risultato4 = isRbtp4(rbt,node);
-
-    return risultato1 && risultato2 && risultato3 && risultato4;
-
+    //QUALE PROPRIETÀ VA CERCATA? METTO QUA RBT SEARCH?
+    return true;
+    
 }
 
 /**
@@ -1043,23 +987,23 @@ bool isRbt(rbt_t* rbt) {
  */
 bool rbtHasBstProperty(rbt_t* rbt) {
     rbtNode_t *x=rbt->root;
-    bool check1,check2;
     rbtTestStructure_t *testStructure = (rbtTestStructure_t*)malloc(sizeof(rbtTestStructure_t));
     testStructure->index = 0;
     testStructure->A = malloc(sizeof(rbtTestStructure_t)*rbt->size);
     rbtHasBstPropertyUtil(rbt,x,testStructure);
-    check2 = isSorted(testStructure->A,testStructure->index);
+    if(isSorted(testStructure->A,testStructure->index)){
     free(testStructure->A);
-    free(testStructure);
-    x = rbt->root;
-    if(x!= rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
-        if(x->left->value < x->value && x->right->value >= x->value){
-                check1 = true;
-        }else{
-            check1 = false;
+        free(testStructure);
+        x = rbt->root;
+        if(x!= rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
+            if(x->left->value < x->value && x->right->value >= x->value){
+                   return true;
+            }else{
+                return false;
+            }
         }
     }
-    return check1 && check2;
+    return false;
 }
 
 /**
@@ -1173,8 +1117,8 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
     hashtable_t* hashTable = createHashtable(NUM_ENTRIES);
     rbt_t* rbt= createRbt();
     rbtNode_t* nodeRbt;
-    linkedListNode_t* nodeHashTable;
     start=clock();
+    linkedListNode_t* nodeHashTable; //Genera warning: non in uso ma necessaria per fare test
     if(strcmp(dataStructure, "hashtable")==0){
         for(int i=0; i<numInsertions; i++){
             key=rand() % MAX_RANDOM_NUMBER+1;
