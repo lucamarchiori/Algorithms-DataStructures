@@ -177,11 +177,11 @@ const time_t RANDOM_SEED = 20;
 // Minimum number of vertices.
 const unsigned int MIN_NUM_VERTICES = 10; //10
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 10; //1000
+const unsigned int MAX_NUM_VERTICES = 250; //1000
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 5; //50 
+const unsigned int NUM_EXPERIMENTS = 50; //50 
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
@@ -417,22 +417,22 @@ bool queue_is_empty(queue_t* Q) {
  * @return Queue node containing the minimum (estimated distance from the source).
  */
 queue_node_t* queue_extract_min(queue_t* Q) {
-	queue_node_t* min = Q->A[0];
+	queue_node_t* min;
 	int index = 0;
-	int min_dis = min->distance;
-	for(int i=0; i<Q->queue_size; i++)
+	int min_dis = INT_MAX;
+	for(int i=0; i<Q->array_length; i++)
 	{
 		if(Q->A[i]->present && Q->A[i]->distance<min_dis)
 		{
-			min_dis =  Q->A[i]->distance;
 			min = Q->A[i];
+			min_dis =  min->distance;
 			index = i;
 		}
 	}
 	if(Q->A[index]->present == true)
 	{
+        min = Q->A[index];
 		Q->A[index]->present = false;
-		Q->queue_size--;
 	}
     return min;
 }
@@ -444,7 +444,7 @@ queue_node_t* queue_extract_min(queue_t* Q) {
  * @param distance New distance/key.
  */
 void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsigned int distance) {
-    if(Q->A[vertex_number]>Q->A[distance] && (Q->A[vertex_number]->present))
+    if(Q->A[vertex_number]->distance > distance && (Q->A[vertex_number]->present))
     {
     	Q->A[vertex_number]->distance = distance;
 	}
@@ -456,11 +456,11 @@ void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsi
  * @param Q Queue.
  */
 void queue_free(queue_t* Q) {
-	for(int i = 0; i<Q->queue_size;i++)
+	for(int i = 0; i<Q->array_length;i++)
 	{
-		free(Q->A[i]);
+        free(Q->A[i]);
 	}
-	free(Q);
+    free(Q->A);
     return;
 }
 
@@ -540,14 +540,20 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
  * @param G Graph.
  */
 void graph_free(graph_t* G) {
-	for(int i = 0; i<G->number_vertices; i++)
-    {
-    	for(int j = 0; j<G->number_vertices; j++)
-    	{
-    		//LIBERA
-    	}
-    	
-    }
+//     adj_list_node_t* x;
+//     for (int i=0; i<G->number_vertices; i++) 
+//     {
+//         x = G->adj[i].head;
+//         while(x)
+//         {
+//             if(x->next)
+//                 G->adj[i].head = G->adj[i].head->next;            
+//             x = G->adj[i].head;
+//             free(x);
+//         }
+//     }
+//    free(G->adj);
+// free(G);
     return;
 }
 
@@ -615,47 +621,39 @@ void dijkstra(graph_t* G, unsigned const int source) {
 	
 */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
- 	queue_t coda = queue_create(G->number_vertices);
-    queue_node_t* qn;
+ 	queue_t Q = queue_create(G->number_vertices);
+    queue_node_t* q_node;
     adj_list_node_t* v_node;
     int u,v;
     int distances[G->number_vertices];
     for(int i=0;i<G->number_vertices; i++)
     {
         distances[i]=INT_MAX;
-        coda.A[i]=queue_create_node(i,distances[i]);
-        coda.A[i]->present = true;
+        Q.A[i]=queue_create_node(i,distances[i]);
+        Q.queue_size ++;
+        Q.A[i]->present = true;
     }
-    queue_decrease_key(&coda,source,0);
+    queue_decrease_key(&Q,source,0); //Sorgente ha peso zero
     distances[source] = 0;
-    while(!queue_is_empty(&coda))
+    while(!queue_is_empty(&Q))
     {
-        qn = queue_extract_min(&coda);
-        u = qn->vertex_number;
+        q_node = queue_extract_min(&Q);
+        Q.queue_size--;
+        u = q_node->vertex_number;
         v_node = G->adj[u].head;
-        v = v_node->target;
         while(v_node)
         {
+            v = v_node->target;
             if(v_node->weight+distances[u]<distances[v])
             {
-                distances[v] = distances[u];
+                distances[v] = distances[u]+v_node->weight;
+                queue_decrease_key(&Q,v,distances[v]);
             }
-
             v_node=v_node->next;
-            return; //DA RIMUOVERE, PRESENTE SOLO PER NON LOOPPARE IN TEST
         }
-
     }
+    queue_free(&Q);
     return;
-    /*
-        1)Inizializzare sorgente e tutti i nodi (con peso infinito)
-        2) Finché la coda non é vuota:
-            Estrai elemento di peso minimo
-            Per ogni elemento estratto
-                Cerca i suoi adiacenti nella ADJ
-                Rilassa ogni adiacente
-
-    */
 }
 
 /**
@@ -730,12 +728,11 @@ int main() {
         for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
-            graph_print(&G);
+            //graph_print(&G);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
             time_queue += do_experiment(&G, "queue");
-            
             graph_free(&G);
         }
         
