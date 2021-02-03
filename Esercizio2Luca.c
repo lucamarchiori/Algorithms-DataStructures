@@ -151,10 +151,7 @@ const bool TEST_DATA_STRUCTURES = true;
 const unsigned int NUM_ELEMENTS_FOR_TEST = 1000;
 // Output type.
 const outputEnum_t outputType = ONCONSOLE;
-//conteggio
-unsigned int CONT = 0;
-//risultato
-bool R = false;
+
 // Output pointer (for printing).
 FILE* outputPointer;
 
@@ -415,7 +412,6 @@ clock_t doExperiment(int*, const unsigned int, const unsigned int, char*);
 // ##### End of PROTOTYPES OF THE FUNCTIONS ##### //
 
 int main() {
-
     // Random seed initialization.
     srand(RANDOM_SEED);
     // Elapsed time for hashtable.
@@ -433,9 +429,7 @@ int main() {
         if (outputType== ONCONSOLE) outputPointer = stdout;
         // On file.
         else {
-            // Open file.
             outputPointer = fopen("results.txt", "w");
-            // Have we opened the file?
             if (outputPointer == NULL) {
                 fprintf(stderr, "ERROR: The outputPointer has not been created\n");
                 exit(-1);
@@ -503,15 +497,11 @@ int main() {
         fprintf(outputPointer, "| The number near \"Hashtable\" is the number of entries in the hashtable   |\n");
         fprintf(outputPointer, "+-------------------------------------------------------------------------+\n");
     }
-
     if (TEST_DATA_STRUCTURES) {
         fprintf(outputPointer, "| Hashtable implementation: %-12s                                  |\n", hashtableTest() ? "correct" : "not correct");
-
         fprintf(outputPointer, "| Red black tree implementation: %-12s                             |\n", rbtTest() ? "correct" : "not correct");
         fprintf(outputPointer, "+-------------------------------------------------------------------------+\n");
     }
-
-    // Return 0.
     return 0;
 }
 
@@ -606,12 +596,11 @@ void linkedListPrint(linkedList_t* list) {
  * @param list Linked list to be freed.
  */
 void linkedListFree(linkedList_t* list) {
-    
-    linkedListNode_t *del;
+    linkedListNode_t *nodo;
     while(list->head!=NULL){
-        del = list->head;
+        nodo = list->head;
         list->head = list->head->next;
-        free(del);
+        free(nodo);
     }
         free(list);
 }
@@ -712,6 +701,7 @@ bool hashtableTest() {
     hashtable_t * hash = createHashtable(NUM_ELEMENTS_FOR_TEST);
     linkedListNode_t *nodo;
     for (int i = 0; i<NUM_ELEMENTS_FOR_TEST;i++){
+        A[i]=0;
         hashtableInsert(hash,A[i]);
         nodo = hashtableSearch(hash,A[i]);
         if(nodo->value==A[i])
@@ -960,7 +950,7 @@ bool rbtTest() {
             testSearch = false;
         }
     }
-    if(testSearch && isRbt(rbt) && rbtHasBstProperty(rbt))
+    if(testSearch && isRbt(rbt))
          test = true;
     else
         test = false;
@@ -975,9 +965,8 @@ bool rbtTest() {
  * @return True if it is; otherwise, false.
  */
 bool isRbt(rbt_t* rbt) {
-    //QUALE PROPRIETÀ VA CERCATA? METTO QUA RBT SEARCH?
-    return true;
-    
+    if(rbtComputeBlackHeight(rbt, rbt->root) != (-1) && rbtHasBstProperty(rbt)) return true;
+    else return false;
 }
 
 /**
