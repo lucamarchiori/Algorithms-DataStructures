@@ -263,6 +263,7 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
 	int l = heap_left_index(i);
 	int r = heap_right_index(i);
 	int smallest = i;
+
 	if(l<=H->heap_size && (H->A[l])<(H->A[i]))
 	{
 		smallest = l;
@@ -273,6 +274,7 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
 	}  
 	if(smallest != i)
 	{
+        //aggionare p
 		min_heap_swap(&H->A[i],&H->A[smallest]);
 		min_heap_heapify(H,smallest);
 	}
@@ -287,6 +289,7 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  */
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
+    H.P = malloc(array_length * sizeof(int*));
 	H.A = malloc(array_length * sizeof(min_heap_node_t**));
     H.array_length = array_length;
     H.heap_size=0;   
@@ -313,9 +316,13 @@ bool min_heap_is_empty(min_heap_t* H) {
 min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
 	if(!min_heap_is_empty(H))
 	{
+        int i;
 		min_heap_node_t* min = H->A[0];
+        min_heap_node_t* i_node;
 		H->A[0] = H->A[H->heap_size];
 		H->heap_size--;
+        H->P[min->vertex_number] = i;
+        H->P[i_node->vertex_number] = min->vertex_number;
 		min_heap_heapify(H, 0);
     	return min;
 	}
@@ -329,18 +336,21 @@ min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
  * @param distance New distance/key.
  */
 void min_heap_decrease_key(min_heap_t* H, /*const*/ unsigned int vertex_number, const unsigned int distance) {
-	if(distance>(H->A[vertex_number]->distance))
+	int i;
+    if(distance>(H->A[vertex_number]->distance))
 	{
 		exit(1);
 	}
 	else
 	{
-		//VA IMPLEMENTATO TOGLIENDO WHILE E USANDO P
-		H->A[vertex_number]->distance=distance;
+        i=H->P[vertex_number];
+        H->A[i]->distance = distance;
 		while(vertex_number > 0 && H->A[heap_parent_index(vertex_number)]->distance > H->A[vertex_number]->distance)
 		{
-			min_heap_swap(&H->A[vertex_number], &H->A[heap_parent_index(vertex_number)]);
+			min_heap_swap(&H->A[i], &H->A[heap_parent_index(i)]);
 			vertex_number = heap_parent_index(vertex_number);
+            H->P[H->A[i]->vertex_number] = (i-1)/2;
+            H->P[H->A[(i-1)/2]->vertex_number] = i;
 		}
 	}
     return;
@@ -385,7 +395,7 @@ queue_t queue_create(const unsigned int array_length) {
     queue_t Q;
     Q.array_length = array_length;
     Q.queue_size = 0;
-    Q.A = malloc(array_length * sizeof(queue_node_t**));
+    Q.A = (queue_node_t **) malloc(array_length * sizeof(queue_node_t**));
     return Q;
 }
 
@@ -597,7 +607,6 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @param source Source vertex number.
  */
 
-
 /*
 	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
 	Decrease key = cambiare priorit? del vertice x = accedi in posizione x e assegna vuovo peso.
@@ -607,28 +616,46 @@ void dijkstra(graph_t* G, unsigned const int source) {
 */
 void dijkstra_with_queue(graph_t* G, const unsigned int source) {
  	queue_t coda = queue_create(G->number_vertices);
-    queue_node_t* nodo;
+    queue_node_t* qn;
+    adj_list_node_t* v_node;
+    int u,v;
+    int distances[G->number_vertices];
     for(int i=0;i<G->number_vertices; i++)
     {
-        adj_list_node_t* x = G->adj[i].head;
-
-            if (x->next)
+        distances[i]=INT_MAX;
+        coda.A[i]=queue_create_node(i,distances[i]);
+        coda.A[i]->present = true;
+    }
+    queue_decrease_key(&coda,source,0);
+    distances[source] = 0;
+    while(!queue_is_empty(&coda))
+    {
+        qn = queue_extract_min(&coda);
+        u = qn->vertex_number;
+        v_node = G->adj[u].head;
+        v = v_node->target;
+        while(v_node)
+        {
+            if(v_node->weight+distances[u]<distances[v])
             {
-                nodo=queue_create_node(x->target,x->weight);
-                coda.A[i]=nodo;
-                coda.queue_size++;
+                distances[v] = distances[u];
             }
-            else
-            {
-                nodo=queue_create_node(x->target,x->weight);
-                coda.A[i]=nodo;
-                coda.queue_size++;
 
-            }
-            x = x->next;
-        
+            v_node=v_node->next;
+            return; //DA RIMUOVERE, PRESENTE SOLO PER NON LOOPPARE IN TEST
+        }
+
     }
     return;
+    /*
+        1)Inizializzare sorgente e tutti i nodi (con peso infinito)
+        2) Finché la coda non é vuota:
+            Estrai elemento di peso minimo
+            Per ogni elemento estratto
+                Cerca i suoi adiacenti nella ADJ
+                Rilassa ogni adiacente
+
+    */
 }
 
 /**
