@@ -175,13 +175,13 @@ typedef enum output_enum_t {
 // Random seed (important for reproducibility).
 const time_t RANDOM_SEED = 20;
 // Minimum number of vertices.
-const unsigned int MIN_NUM_VERTICES = 10; //10
+const unsigned int MIN_NUM_VERTICES = 5; //10
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 250; //1000
+const unsigned int MAX_NUM_VERTICES = 5|497 |496 |262; //1000
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 50; //50 
+const unsigned int NUM_EXPERIMENTS = 1; //50 
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
@@ -535,6 +535,56 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
     return G;
 }
 
+
+/**
+ * @brief Create (non-empty) custom graph (Figure 24.6 - page 659 - Introduction to Algorithms (H. Cormen) ).
+ * @return Newly create graph.
+ * Vertex s in the figure is vertex 0 in the graph
+ * Vertex t in the figure is vertex 1 in the graph
+ * Vertex y in the figure is vertex 2 in the graph
+ * Vertex x in the figure is vertex 3 in the graph
+ * Vertex z in the figure is vertex 4 in the graph
+ */
+graph_t graph_test_manual_creation() {
+    int number_vertices = 5;
+    int v = 0;
+    graph_t G;
+    G.number_vertices = number_vertices;
+    G.adj = malloc(number_vertices * sizeof(adj_list_node_t));
+
+    //Vertex 0
+    v=0;
+    G.adj[v].head = NULL;
+    graph_add_edge(&G,v,1,10);
+    graph_add_edge(&G,v,2,5);
+
+    //Vertex 1
+    v=1;
+    G.adj[v].head = NULL;
+    graph_add_edge(&G,v,3,1);
+    graph_add_edge(&G,v,2,2);
+
+    //Vertex 2
+    v=2;
+    G.adj[v].head = NULL;
+    graph_add_edge(&G,v,1,3);
+    graph_add_edge(&G,v,3,9);
+    graph_add_edge(&G,v,4,2);
+
+    //Vertex 3
+    v=3;
+    G.adj[v].head = NULL;
+    graph_add_edge(&G,v,4,4);
+
+    //Vertex 4
+    v=4;
+    G.adj[v].head = NULL;
+    graph_add_edge(&G,v,3,6);
+    graph_add_edge(&G,v,0,7);
+
+    return G;
+}
+
 /**
  * @brief Free graph.
  * @param G Graph.
@@ -610,6 +660,7 @@ void dijkstra(graph_t* G, unsigned const int source) {
  * @brief Dijkstra's single-source shortest-path algorithm with queue.
  * @param G Graph.
  * @param source Source vertex number.
+ * @param showresults Print new distances.
  */
 
 /*
@@ -619,12 +670,13 @@ void dijkstra(graph_t* G, unsigned const int source) {
 	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
 	
 */
-void dijkstra_with_queue(graph_t* G, const unsigned int source) {
+void dijkstra_with_queue(graph_t* G, const unsigned int source, bool showresults) {
  	queue_t Q = queue_create(G->number_vertices);
     queue_node_t* q_node;
     adj_list_node_t* v_node;
     int u,v;
     int distances[G->number_vertices];
+
     for(int i=0;i<G->number_vertices; i++)
     {
         distances[i]=INT_MAX;
@@ -632,7 +684,7 @@ void dijkstra_with_queue(graph_t* G, const unsigned int source) {
         Q.queue_size ++;
         Q.A[i]->present = true;
     }
-    queue_decrease_key(&Q,source,0); //Sorgente ha peso zero
+    queue_decrease_key(&Q,source,0);
     distances[source] = 0;
     while(!queue_is_empty(&Q))
     {
@@ -651,6 +703,7 @@ void dijkstra_with_queue(graph_t* G, const unsigned int source) {
             v_node=v_node->next;
         }
     }
+    if(showresults) print_distances(distances,G->number_vertices);
     queue_free(&Q);
     return;
 }
@@ -666,7 +719,7 @@ time_t do_experiment(graph_t* G, char* priority_type) {
     
     start_time = clock();
     if (strcmp(priority_type, "min-heap") == 0) dijkstra(G, SOURCE_VERTEX_NUMBER);
-    else if (strcmp(priority_type, "queue") == 0) dijkstra_with_queue(G, SOURCE_VERTEX_NUMBER);
+    else if (strcmp(priority_type, "queue") == 0) dijkstra_with_queue(G, SOURCE_VERTEX_NUMBER, false);
     else {
         fprintf(stderr, "ERROR: The type of the priority can be either min-heap or queue: %s is not allowed\n", priority_type);
         exit(-1);
@@ -676,6 +729,23 @@ time_t do_experiment(graph_t* G, char* priority_type) {
     return end_time - start_time;
 }
 
+/**
+ * @brief Test dijkstra with a custom graph
+ */
+void test() {
+    fprintf(output_pointer, "\n");
+    fprintf(output_pointer, "+--------------------+------ TESTING ------+---------------------+\n");
+    fprintf(output_pointer, "|- Figure 24.6 - P.659 - Introduction to Algorithms (H. Cormen) -|\n");
+    fprintf(output_pointer, "\n");
+    fprintf(output_pointer, " ---          GRAPH          ----\n");
+    graph_t G = graph_test_manual_creation();
+    graph_print(&G);
+    fprintf(output_pointer, " ---  DIJKSTRA QUEUE RESULT  ----\n");
+    dijkstra_with_queue(&G,0,true);
+    fprintf(output_pointer, " --- DIJKSTRA MINHEAP RESULT ----\n");
+    graph_free(&G);
+    return;
+}
 // ----- End of CORE FUNCTIONS ----- //
 
 // ##### End of IMPLEMENTATION OF THE FUNCTIONS ##### //
@@ -727,7 +797,6 @@ int main() {
         for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
-            //graph_print(&G);
             // Time with min heap.
             time_min_heap += do_experiment(&G, "min-heap");
             // Time with queue.
@@ -747,8 +816,9 @@ int main() {
                 num_vertices,
                 (float) time_min_heap/NUM_EXPERIMENTS, 
                 (float) time_queue/NUM_EXPERIMENTS);
-                 
+
     }
+    test();
     
     return 0;
 }
