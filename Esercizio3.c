@@ -540,20 +540,19 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
  * @param G Graph.
  */
 void graph_free(graph_t* G) {
-//     adj_list_node_t* x;
-//     for (int i=0; i<G->number_vertices; i++) 
-//     {
-//         x = G->adj[i].head;
-//         while(x)
-//         {
-//             if(x->next)
-//                 G->adj[i].head = G->adj[i].head->next;            
-//             x = G->adj[i].head;
-//             free(x);
-//         }
-//     }
-//    free(G->adj);
-// free(G);
+    adj_list_t list;
+    adj_list_node_t* x;
+    for (int i=0; i<G->number_vertices; i++) 
+    {
+        list = G->adj[i];
+        while (list.head!=NULL)
+        {
+            x= list.head;
+            list.head=list.head->next;
+            free(x);
+        }
+    }
+    free(G->adj);
     return;
 }
 
