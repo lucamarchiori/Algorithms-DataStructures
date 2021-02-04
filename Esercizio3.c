@@ -225,7 +225,6 @@ int heap_left_index(const unsigned int i) {
  * @return Right index.
  */
 int heap_right_index(const unsigned int i) {
-	 //OK - CORRETTO
     return (i<<1)+2; // Shift left the bit-representation of i, then add 2 as lower bit; English version of the CLRS text-book, pg. 152.
 }
 
