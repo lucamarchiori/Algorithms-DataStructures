@@ -235,7 +235,7 @@ int heap_right_index(const unsigned int i) {
  * @return Newly created node.
  */
 min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	min_heap_node_t *nodo = (min_heap_node_t *) malloc(sizeof(min_heap_node_t));
+	min_heap_node_t *nodo = malloc(sizeof(min_heap_node_t));
     nodo->vertex_number = vertex_number;
     nodo->distance = distance;
 	return nodo;
@@ -293,8 +293,8 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  */
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
-    H.P = malloc(array_length * sizeof(int*));
-	H.A = malloc(array_length * sizeof(min_heap_node_t**));
+    H.P = malloc(array_length * sizeof(int));
+    H.A = malloc(array_length * sizeof(min_heap_node_t));
     H.array_length = array_length;
     H.heap_size=0;   
     return H;
@@ -363,10 +363,12 @@ void min_heap_decrease_key(min_heap_t* H, unsigned int vertex_number, const unsi
  * @param H Min-heap.
  */
 void min_heap_free(min_heap_t* H) {
-	for(int i = 0; i<H->array_length; i++)
-	{
-		free(H->A[i]);
-	}
+     for (int i = 0; i < H->heap_size; i++)
+     {
+         free(H->A[i]);
+     }
+    free(H->A);
+    free(H->P);
     return;
 }
 
@@ -689,7 +691,7 @@ void dijkstra(graph_t* G, unsigned const int source, bool showresults) {
         }
     }
     if(showresults) print_distances(distances,G->number_vertices);
-    //queue_free(&Q);
+    min_heap_free(&H);
     return;
 }
 
