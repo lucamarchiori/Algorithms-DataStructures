@@ -235,7 +235,7 @@ int heap_right_index(const unsigned int i) {
  * @return Newly created node.
  */
 min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	min_heap_node_t *nodo = malloc(sizeof(min_heap_node_t));
+	min_heap_node_t *nodo = malloc(2*sizeof(min_heap_node_t));
     nodo->vertex_number = vertex_number;
     nodo->distance = distance;
 	return nodo;
@@ -294,7 +294,7 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
 min_heap_t min_heap_create(const unsigned int array_length) {
     min_heap_t H;
     H.P = malloc(array_length * sizeof(int));
-    H.A = malloc(array_length * sizeof(min_heap_node_t));
+    H.A = malloc(array_length * sizeof(min_heap_node_t *));
     H.array_length = array_length;
     H.heap_size=0;   
     return H;
@@ -363,10 +363,11 @@ void min_heap_decrease_key(min_heap_t* H, unsigned int vertex_number, const unsi
  * @param H Min-heap.
  */
 void min_heap_free(min_heap_t* H) {
-     for (int i = 0; i < H->heap_size; i++)
-     {
-         free(H->A[i]);
-     }
+
+    for (int i = 0; i < H->array_length; i++)
+    {
+        free(H->A[i]);
+    }
     free(H->A);
     free(H->P);
     return;
@@ -383,7 +384,7 @@ void min_heap_free(min_heap_t* H) {
  * @return Newly create node.
  */
 queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	queue_node_t *nodo = (queue_node_t *) malloc(sizeof(queue_node_t));
+	queue_node_t *nodo = malloc(sizeof(queue_node_t));
 	nodo->distance = distance;
 	nodo->vertex_number = vertex_number;
 	nodo->present = true;
@@ -399,7 +400,7 @@ queue_t queue_create(const unsigned int array_length) {
     queue_t Q;
     Q.array_length = array_length;
     Q.queue_size = 0;
-    Q.A = (queue_node_t **) malloc(array_length * sizeof(queue_node_t**));
+    Q.A = malloc(array_length * sizeof(queue_node_t**));
     return Q;
 }
 
@@ -491,7 +492,7 @@ void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
  * @return Newly created node.
  */
 adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned int weight) {
-	adj_list_node_t *nodo = (adj_list_node_t *) malloc(sizeof(adj_list_node_t));
+	adj_list_node_t *nodo = malloc(sizeof(adj_list_node_t));
     nodo->target = target;
 	nodo->weight = weight;
     return nodo;
@@ -670,7 +671,6 @@ void dijkstra(graph_t* G, unsigned const int source, bool showresults) {
         H.P[i] = i;
     }
     distances[source]=0;
-    H.A[source] = min_heap_create_node(source, distances[source]);
     H.P[source] = 0;
     min_heap_decrease_key(&H,source,distances[0]);
 

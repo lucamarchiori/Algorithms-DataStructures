@@ -132,11 +132,11 @@ typedef enum outputEnum_t {
 // Random seed (important for reproducibility).
 time_t RANDOM_SEED = 20;
 // Maximum random number allowed.
-const unsigned int MAX_RANDOM_NUMBER = 500;
+const unsigned int MAX_RANDOM_NUMBER = 100;
 // Minimum number of operations.
 const unsigned int MIN_OPERATIONS = 100;
 // Maximum number of operations.
-const unsigned int MAX_OPERATIONS = 5000;
+const unsigned int MAX_OPERATIONS = 2000;
 // Step of the experiment.
 const unsigned int STEP = 100;
 // Number of experiments.
@@ -151,7 +151,10 @@ const bool TEST_DATA_STRUCTURES = true;
 const unsigned int NUM_ELEMENTS_FOR_TEST = 1000;
 // Output type.
 const outputEnum_t outputType = ONCONSOLE;
-
+//conteggio
+unsigned int CONT = 0;
+//risultato
+bool R = false;
 // Output pointer (for printing).
 FILE* outputPointer;
 
@@ -412,6 +415,7 @@ clock_t doExperiment(int*, const unsigned int, const unsigned int, char*);
 // ##### End of PROTOTYPES OF THE FUNCTIONS ##### //
 
 int main() {
+
     // Random seed initialization.
     srand(RANDOM_SEED);
     // Elapsed time for hashtable.
@@ -429,7 +433,9 @@ int main() {
         if (outputType== ONCONSOLE) outputPointer = stdout;
         // On file.
         else {
+            // Open file.
             outputPointer = fopen("results.txt", "w");
+            // Have we opened the file?
             if (outputPointer == NULL) {
                 fprintf(stderr, "ERROR: The outputPointer has not been created\n");
                 exit(-1);
@@ -497,11 +503,15 @@ int main() {
         fprintf(outputPointer, "| The number near \"Hashtable\" is the number of entries in the hashtable   |\n");
         fprintf(outputPointer, "+-------------------------------------------------------------------------+\n");
     }
+
     if (TEST_DATA_STRUCTURES) {
         fprintf(outputPointer, "| Hashtable implementation: %-12s                                  |\n", hashtableTest() ? "correct" : "not correct");
+
         fprintf(outputPointer, "| Red black tree implementation: %-12s                             |\n", rbtTest() ? "correct" : "not correct");
         fprintf(outputPointer, "+-------------------------------------------------------------------------+\n");
     }
+
+    // Return 0.
     return 0;
 }
 
@@ -515,7 +525,7 @@ int main() {
  * @return Created linked list node.
  */
 linkedListNode_t* createLinkedListNode(const int v) {
-    linkedListNode_t *x = malloc(sizeof(linkedListNode_t));
+    linkedListNode_t *x = (linkedListNode_t *) malloc(sizeof(linkedListNode_t));
     x->value=v;
     x->next=NULL;
     x->prev=NULL;
@@ -527,7 +537,7 @@ linkedListNode_t* createLinkedListNode(const int v) {
  * @return Created linked list.
  */
 linkedList_t* createLinkedList() {
-    linkedList_t *l = malloc(sizeof(linkedList_t));
+    linkedList_t *l = (linkedList_t *) malloc(sizeof(linkedList_t));
     l->head=NULL;
     l->size=0;
     return l;
@@ -596,13 +606,15 @@ void linkedListPrint(linkedList_t* list) {
  * @param list Linked list to be freed.
  */
 void linkedListFree(linkedList_t* list) {
-    linkedListNode_t *nodo;
+    
+    linkedListNode_t *del;
     while(list->head!=NULL){
-        nodo = list->head;
+        del = list->head;
         list->head = list->head->next;
-        free(nodo);
+        free(del);
     }
-    free(list);
+        free(list);
+
 }
 
 // ----- End of LINKED LIST ----- //
@@ -615,7 +627,7 @@ void linkedListFree(linkedList_t* list) {
  * @return The created hashtable.
  */
 hashtable_t* createHashtable(const unsigned int s) {
-  hashtable_t* hash = malloc(sizeof(hashtable_t));
+  hashtable_t* hash = (hashtable_t*)malloc(sizeof(hashtable_t));
   hashtableEntry_t *head;
   if(!hash){
     return NULL;
@@ -653,9 +665,11 @@ const unsigned int hashFunction(hashtable_t* hashtbl, const int v) {
  * @param v Value to be inserted.
  */
 void hashtableInsert(hashtable_t* hashtbl, const int v) {
-    int hash = hashFunction(hashtbl,v);
+    int  i = hashFunction(hashtbl,v);
+
     linkedListNode_t *x = createLinkedListNode(v);
-    linkedListInsert(hashtbl->entry[hash]->list,x);
+
+    linkedListInsert(hashtbl->entry[i]->list,x);
 }
 
 /**
@@ -666,6 +680,7 @@ void hashtableInsert(hashtable_t* hashtbl, const int v) {
  */
 linkedListNode_t* hashtableSearch(hashtable_t* hashtbl, const int v) {
     int i = hashFunction(hashtbl,v);
+
     return linkedListSearch(hashtbl->entry[i]->list,v);
 }
 
@@ -696,21 +711,28 @@ void hashtablePrint(hashtable_t* hashtbl) {
  * @return True if it is correct; otherwise, false.
  */
 bool hashtableTest() {
-    bool test;
+    bool risultato;
     int A[NUM_ELEMENTS_FOR_TEST];
     hashtable_t * hash = createHashtable(NUM_ELEMENTS_FOR_TEST);
     linkedListNode_t *nodo;
-    for (int i = 0; i<NUM_ELEMENTS_FOR_TEST;i++){
-        A[i]=0;
-        hashtableInsert(hash,A[i]);
-        nodo = hashtableSearch(hash,A[i]);
-        if(nodo->value==A[i])
-            test=true;
-        else
-            test=false;
+    for (int i = 0; i< NUM_ELEMENTS_FOR_TEST;i++){
+        A[i]=i*i;
     }
+    for (int i = 0; i < NUM_ELEMENTS_FOR_TEST ; i++){
+        hashtableInsert(hash,A[i]);
+    }
+    for (int j=0;j<NUM_ELEMENTS_FOR_TEST;j++){
+        nodo = hashtableSearch(hash,A[j]);
+        if(nodo->value==A[j]){
+           risultato=true;
+        }else{
+            risultato = false;
+        }
+    }
+
     hashtableFree(hash);
-    return test;
+
+    return risultato;
 }
 
 /**
@@ -718,9 +740,10 @@ bool hashtableTest() {
  * @param hashtbl Hashtable to be freed.
  */
 void hashtableFree(hashtable_t* hashtbl) {
-    for(int i=0;i<hashtbl->size;i++){
-        linkedListFree(hashtbl->entry[i]->list);
-        free(hashtbl->entry[i]);
+    int a;
+    for(a=0;a<hashtbl->size;a++){
+        linkedListFree(hashtbl->entry[a]->list);
+        free(hashtbl->entry[a]);
     }
     free(hashtbl->entry);
     free(hashtbl);
@@ -736,12 +759,13 @@ void hashtableFree(hashtable_t* hashtbl) {
  * @return Created RBT node.
  */
 rbtNode_t* createRbtNode(const int v) {
-    rbtNode_t *nodo = malloc(sizeof(rbtNode_t));
+    rbtNode_t *nodo = (rbtNode_t*) malloc(sizeof(rbtNode_t));
+    nodo->color = 'R';
+    nodo->value = v;
     nodo->left = NULL;
     nodo->right = NULL;
     nodo->parent = NULL;
-    nodo->value = v;
-    nodo->color = 'R';
+
     return nodo;
 }
 
@@ -750,12 +774,13 @@ rbtNode_t* createRbtNode(const int v) {
  * @return Created RBT.
  */
 rbt_t* createRbt() {
-    rbt_t *rbt = malloc(sizeof(rbt_t));
-    rbt->size = 0;
+    rbt_t *rbt = (rbt_t*)malloc(sizeof(rbt_t));
     rbt->nil = createRbtNode(0);
     rbt->nil->color = 'B';
     rbt->root=rbt->nil;
+    rbt->size = 0;
     return rbt;
+
 }
 
 /**
@@ -767,20 +792,22 @@ void rbtLeftRotate(rbt_t* rbt, rbtNode_t* x) {
     rbtNode_t *y;
     y = x->right;
     x->right=y->left;
-    if (y->left !=rbt->nil) 
+    if (!(y->left ==rbt->nil)){
         y->left->parent = x;
+    }
     y->parent = x->parent;
-    if(x->parent == rbt->nil)
+    if(x->parent == rbt->nil){
         rbt->root= y;
-    else if(x->parent != rbt->nil)
-    {
-        if(x == x->parent->left)
+    }
+    if(!(x->parent == rbt->nil) && x == x->parent->left){
             x->parent->left= y;
-        if(x == x->parent->right) 
-            x->parent->right = y;     
+    }
+    if(!(x->parent == rbt->nil) && x == x->parent->right){
+        x->parent->right = y;
     }
     y->left = x;
     x->parent  = y;
+
 }
 
 /**
@@ -792,20 +819,22 @@ void rbtRightRotate(rbt_t* rbt, rbtNode_t* x) {
     rbtNode_t *y;
     y = x->left;
     x->left=y->right;
-    if(y->right != rbt->nil)
+    if(y->right != rbt->nil){
         y->right->parent = x;
+    }
     y->parent = x->parent;
-    if(x->parent == rbt->nil)
+    if(x->parent == rbt->nil){
         rbt->root= y;
-    else if(x->parent != rbt->nil)
-    {
-        if(x == x->parent->right)
+    }
+    if(!(x->parent == rbt->nil) && x == x->parent->right){
             x->parent->right= y;
-        if(x == x->parent->left)
-            x->parent->left = y;        
+    }
+    if(!(x->parent == rbt->nil) && x == x->parent->left){
+        x->parent->left = y;
     }
     y->right = x;
     x->parent  = y;
+
 }
 
 /**
@@ -814,24 +843,33 @@ void rbtRightRotate(rbt_t* rbt, rbtNode_t* x) {
  * @param z The RBT node to be inserted.
  */
 void rbtInsert(rbt_t* rbt, rbtNode_t* z) {
-    rbtNode_t *x = rbt->root;
-    rbtNode_t *y = rbt->nil;
     rbt->size++;
-    while (x != rbt->nil){
+    rbtNode_t *y,*x;
+    y = rbt->nil;
+    x = rbt->root;
+    while ( !(x == rbt->nil)){
         y = x;
-        if(z->value < x->value)
+        if(z->value < x->value){
             x = x->left;
-        else
+        }else{
             x = x->right;
+        }
     }
     z->parent = y;
-    if(y == rbt->nil) rbt->root =z;
-    if(y!=rbt->nil && z->value < y->value) y->left = z;
-    if(y!=rbt->nil && z->value >= y->value) y->right = z; 
+    if( y == rbt->nil){
+        rbt->root =z;
+    }
+    if(!(y==rbt->nil) && z->value < y->value){
+        y->left = z;
+    }
+    if(!(y==rbt->nil) && z->value >= y->value){
+        y->right = z;
+    }
     z->left= rbt->nil;
     z->right=rbt->nil;
     z->color = 'R';
     rbtInsertFixup(rbt,z);
+
 }
 
 /**
@@ -892,9 +930,8 @@ void rbtInsertFixup(rbt_t* rbt, rbtNode_t* z) {
  */
 rbtNode_t* rbtSearch(rbt_t* rbt, const int v) {
     rbtNode_t *x = rbt->root;
-    while(x!=rbt->nil && v!=x->value){
-        if(v<x->value) x=x->left;
-        else x=x->right;     
+    while((x!=rbt->nil)&&(v!=x->value)){
+        x = v < x->value ? x->left : x->right;
     }
     return x;
 
@@ -918,25 +955,25 @@ void rbtInOrder(rbt_t* rbt, rbtNode_t* x) {
  * @return True if it is correct; otherwise, false.
  */
 bool rbtTest() {
-    bool test, testSearch;
+    bool risultato,risultato1,risultato2;
     rbt_t * rbt = createRbt();
     rbtNode_t *nodo;
+    int key = 0;
     for (int i = 0; i< NUM_ELEMENTS_FOR_TEST ;i++){
-        nodo = createRbtNode(i);
+        key = i;
+        nodo = createRbtNode(key);
         rbtInsert(rbt,nodo);
+        nodo = rbtSearch(rbt,key);
+        if(nodo->value == key){
+            risultato = true;
+        }else{
+            risultato = false;
+        }
     }
-
-    for(int j=0;j<NUM_ELEMENTS_FOR_TEST;j++)
-    {
-        nodo = rbtSearch(rbt,j);
-        if(nodo->value == j) testSearch = true;
-        else testSearch = false;
-    }
-    if(testSearch && isRbt(rbt)) test = true;
-    else test = false;
-
+    risultato1 = isRbt(rbt);
+    risultato2 = rbtHasBstProperty(rbt);
     rbtFree(rbt);
-    return test;
+    return risultato && risultato1 && risultato2;
 }
 
 /**
@@ -944,9 +981,67 @@ bool rbtTest() {
  * @param rbt Tree to be checked.
  * @return True if it is; otherwise, false.
  */
+
+bool isRbtp1(rbt_t * rbt,rbtNode_t *x){
+    if (x != rbt->nil ){
+        if(x->color == 'R' || x->color == 'B'){
+        isRbtp1(rbt, x->left);
+        isRbtp1(rbt, x->right);
+        CONT++;
+        return true;
+        }else{
+            return false;
+        }
+    }
+}
+bool isRbtp4(rbt_t * rbt,rbtNode_t *x){
+    if (x != rbt->nil){
+    if(x->color == 'R')
+    {
+        if(x->left->color == 'B' && x->right->color == 'B')
+        {
+            R = true;
+        }
+        else
+        {
+            R = false;
+        }
+    }
+    isRbtp4(rbt, x->left);
+    isRbtp4(rbt, x->right);
+    }
+    return R;
+}
+
 bool isRbt(rbt_t* rbt) {
-    if(rbtComputeBlackHeight(rbt, rbt->root) != -1 && rbtHasBstProperty(rbt)) return true;
-    else return false;
+    bool risultato1, risultato2, risultato3, risultato4;
+    rbtNode_t *node = rbt->root;
+    //propriet? 1: ogni nodo ? rosso o nero
+    risultato1 = isRbtp1(rbt,node);
+
+    //propriet? 2: la radice ? nera
+    if(rbt->root->color == 'B'){
+        risultato2 = true;
+    }else{
+        risultato2 = false;
+    }
+
+
+    //propriet? 3: ogni foglia esterna = T.nil ? nera
+
+    if(rbt->nil->color == 'B'){
+        risultato3 = true;
+    }else{
+        risultato3 = false;
+    }
+
+
+    node = rbt->root;
+    //propriet? 4: se un nodo ? rosso entrambi i figli sono neri
+    risultato4 = isRbtp4(rbt,node);
+
+    return risultato1 && risultato2 && risultato3 && risultato4;
+
 }
 
 /**
@@ -954,22 +1049,37 @@ bool isRbt(rbt_t* rbt) {
  * @param rbt Tree to be checked.
  * @return True if it is; otherwise, false.
  */
+
+bool rbtHasBst(rbt_t *rbt,rbtNode_t *x){
+    if(x!= rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
+        if(x->left->value < x->value && x->right->value >= x->value){
+                R = true;
+                rbtHasBst(rbt, x->left);
+                rbtHasBst(rbt, x->right);
+        }else{
+            R = false;
+        }
+    }
+    return R;
+}
 bool rbtHasBstProperty(rbt_t* rbt) {
     rbtNode_t *x=rbt->root;
-    rbtTestStructure_t *testStructure = malloc(sizeof(rbtTestStructure_t));
+    bool check1,check2;
+    rbtTestStructure_t *testStructure = (rbtTestStructure_t*)malloc(sizeof(rbtTestStructure_t));
     testStructure->index = 0;
     testStructure->A = malloc(sizeof(rbtTestStructure_t)*rbt->size);
     rbtHasBstPropertyUtil(rbt,x,testStructure);
-    if(isSorted(testStructure->A,testStructure->index)){
+    check2 = isSorted(testStructure->A,testStructure->index);
     free(testStructure->A);
-        free(testStructure);
-        x = rbt->root;
-        if(x!= rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
-            if(x->left->value < x->value && x->right->value >= x->value) return true;
-            else return false;
-        }
-    }
-    return false;
+    free(testStructure);
+    x = rbt->root;
+
+
+
+
+    
+    check1 = rbtHasBst(rbt,x);
+    return check1 && check2;
 }
 
 /**
@@ -985,6 +1095,7 @@ void rbtHasBstPropertyUtil(rbt_t* rbt, rbtNode_t* x, rbtTestStructure_t* rbtTest
         rbtTestStructure->index++;
         rbtHasBstPropertyUtil(rbt, x->right,rbtTestStructure);
     }
+
 }
 
 /**
@@ -995,16 +1106,20 @@ void rbtHasBstPropertyUtil(rbt_t* rbt, rbtNode_t* x, rbtTestStructure_t* rbtTest
  */
 int rbtComputeBlackHeight(rbt_t* rbt, rbtNode_t* x) {
     int left,right;
-    if(x==rbt->nil) return 1;
+    if(x==rbt->nil)
+        return 1;
     else{
         right=rbtComputeBlackHeight(rbt,x->right);
         left=rbtComputeBlackHeight(rbt,x->left);
-        if(left == -1 || right == -1 || left!=right) return -1;
+        if(left == -1 || right == -1 || left!=right)
+            return -1;
         else
         {
-            if(x->color == 'B') return left + 1;
-            else return left; 
-        }
+            if(x->color == 'B')
+               return left + 1;
+            else
+                return left;
+       }
     }
 }
 
@@ -1073,32 +1188,31 @@ bool isSorted(const int* A, const int n) {
  * @return Elapsed time for the experiment.
  */
 clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const unsigned int numSearches, char* dataStructure) {
+    int key;
+    clock_t start,end=0;
     hashtable_t* hashTable = createHashtable(NUM_ENTRIES);
     rbt_t* rbt= createRbt();
     rbtNode_t* nodeRbt;
-    clock_t start,end=0;
-    linkedListNode_t* nodeHashTable; //Genera warning: non in uso ma necessaria per fare test
-    int key, i;
-
+    linkedListNode_t* nodeHashTable;
     start=clock();
     if(strcmp(dataStructure, "hashtable")==0){
-        for(i=0; i<numInsertions; i++){
+        for(int i=0; i<numInsertions; i++){
             key=rand() % MAX_RANDOM_NUMBER+1;
             hashtableInsert(hashTable,key);
         }
-        for(i=0; i<numSearches; i++){
+        for(int j=0; j<numSearches; j++){
             key=rand()% MAX_RANDOM_NUMBER +1;
             nodeHashTable=hashtableSearch(hashTable,key);
         }
     }
     else if (strcmp(dataStructure, "rbt")==0)
     {
-        for(i=0; i<numInsertions;i++){
+        for(int i=0; i<numInsertions;i++){
             key=rand()%MAX_RANDOM_NUMBER +1;
             nodeRbt=createRbtNode(key);
             rbtInsert(rbt,nodeRbt);
         }
-        for(i=0;i<numSearches; i++){
+        for(int j=0;j<numSearches; j++){
             key=rand()%MAX_RANDOM_NUMBER +1;
             nodeRbt=rbtSearch(rbt,key);
         }
