@@ -262,18 +262,23 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
 	int l = heap_left_index(i);
 	int r = heap_right_index(i);
 	int smallest = i;
+    min_heap_node_t *smallestNode;
+	min_heap_node_t *i_node;
 
-	if(l<=H->heap_size && (H->A[l])<(H->A[i]))
+	if(l<H->heap_size && (H->A[l]->distance)<(H->A[smallest]->distance))
 	{
 		smallest = l;
 	}
-	if(r<=H->heap_size && (H->A[r])<(H->A[smallest]))
+	if(r<H->heap_size && (H->A[r]->distance)<(H->A[smallest]->distance))
 	{
 		smallest = r;
 	}  
 	if(smallest != i)
 	{
-        //aggionare p
+        smallestNode = H->A[smallest];
+        i_node = H->A[i];
+        H->P[smallestNode->vertex_number] = i;
+        H->P[i_node->vertex_number] = smallest;
 		min_heap_swap(&H->A[i],&H->A[smallest]);
 		min_heap_heapify(H,smallest);
 	}
@@ -313,19 +318,20 @@ bool min_heap_is_empty(min_heap_t* H) {
  * @return Min-heap node containing the minimum (estimated distance from the source).
  */
 min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
+    min_heap_node_t* root;
+    min_heap_node_t* last_node;
 	if(!min_heap_is_empty(H))
 	{
-        int i;
-		min_heap_node_t* min = H->A[0];
-        min_heap_node_t* i_node;
-		H->A[0] = H->A[H->heap_size];
-		H->heap_size--;
-        H->P[min->vertex_number] = i;
-        H->P[i_node->vertex_number] = min->vertex_number;
+        root = H->A[0];
+        last_node = H->A[H->heap_size-1];
+        H->A[0] = last_node;
+        H->P[root->vertex_number] = H->heap_size-1;
+        H->P[last_node->vertex_number] = 0;
+        H->heap_size --;
 		min_heap_heapify(H, 0);
-    	return min;
+    	return root;
 	}
-	exit(1);
+    else exit(1);
 }
 
 /**
@@ -334,23 +340,20 @@ min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
  * @param vertex_number Vertex number.
  * @param distance New distance/key.
  */
-void min_heap_decrease_key(min_heap_t* H, /*const*/ unsigned int vertex_number, const unsigned int distance) {
-	int i;
-    if(distance>(H->A[vertex_number]->distance))
+void min_heap_decrease_key(min_heap_t* H, unsigned int vertex_number, const unsigned int distance) {
+	int i,parent;
+    if(distance<(H->A[vertex_number]->distance))
 	{
-		exit(1);
-	}
-	else
-	{
-        i=H->P[vertex_number];
+        i = H->P[vertex_number];
         H->A[i]->distance = distance;
-		while(vertex_number > 0 && H->A[heap_parent_index(vertex_number)]->distance > H->A[vertex_number]->distance)
-		{
-			min_heap_swap(&H->A[i], &H->A[heap_parent_index(i)]);
-			vertex_number = heap_parent_index(vertex_number);
-            H->P[H->A[i]->vertex_number] = (i-1)/2;
-            H->P[H->A[(i-1)/2]->vertex_number] = i;
-		}
+        parent = (i-1)/2;
+        while ( H->A[i]->distance < H->A[parent]->distance && i)
+        {
+            H->P[H->A[i]->vertex_number] = parent;
+            H->P[H->A[parent]->vertex_number] = i;
+            min_heap_swap(&H->A[i], &H->A[parent]);
+            i=parent;
+        }
 	}
     return;
 }
@@ -651,7 +654,42 @@ void print_distances(int* distance, unsigned const int num_vertices) {
  * @param G Graph.
  * @param source Source vertex number.
  */
-void dijkstra(graph_t* G, unsigned const int source) {
+void dijkstra(graph_t* G, unsigned const int source, bool showresults) {
+    min_heap_t H = min_heap_create(G->number_vertices);
+    min_heap_node_t* h_node;
+    adj_list_node_t* v_node;
+    int u,v;
+    int distances[G->number_vertices];
+    for(int i=0;i<G->number_vertices; i++)
+    {
+        distances[i]=INT_MAX;
+        H.A[i]=min_heap_create_node(i, distances[i]);
+        H.heap_size++;
+        H.P[i] = i;
+    }
+    distances[source]=0;
+    H.A[source] = min_heap_create_node(source, distances[source]);
+    H.P[source] = 0;
+    min_heap_decrease_key(&H,source,distances[0]);
+
+    while (!min_heap_is_empty(&H))
+    {
+        h_node=min_heap_extract_min(&H);
+        u=h_node->vertex_number;
+        v_node = G->adj[u].head;
+        while(v_node)
+        {
+            v = v_node->target;
+            if(v_node->weight+distances[u]<distances[v])
+            {
+                distances[v] = distances[u]+v_node->weight;
+                min_heap_decrease_key(&H,v,distances[v]);
+            }
+            v_node=v_node->next;
+        }
+    }
+    if(showresults) print_distances(distances,G->number_vertices);
+    //queue_free(&Q);
     return;
 }
 
@@ -717,7 +755,7 @@ time_t do_experiment(graph_t* G, char* priority_type) {
     clock_t start_time, end_time = 0;
     
     start_time = clock();
-    if (strcmp(priority_type, "min-heap") == 0) dijkstra(G, SOURCE_VERTEX_NUMBER);
+    if (strcmp(priority_type, "min-heap") == 0) dijkstra(G, SOURCE_VERTEX_NUMBER, false);
     else if (strcmp(priority_type, "queue") == 0) dijkstra_with_queue(G, SOURCE_VERTEX_NUMBER, false);
     else {
         fprintf(stderr, "ERROR: The type of the priority can be either min-heap or queue: %s is not allowed\n", priority_type);
@@ -742,6 +780,7 @@ void test() {
     fprintf(output_pointer, " ---  DIJKSTRA QUEUE RESULT  ----\n");
     dijkstra_with_queue(&G,0,true);
     fprintf(output_pointer, " --- DIJKSTRA MINHEAP RESULT ----\n");
+    dijkstra(&G,0,true);
     graph_free(&G);
     return;
 }
