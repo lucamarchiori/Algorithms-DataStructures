@@ -140,17 +140,17 @@ const unsigned int MAX_OPERATIONS = 5000;
 // Step of the experiment.
 const unsigned int STEP = 100;
 // Number of experiments.
-const unsigned int NUM_EXPERIMENTS = 300;
+const unsigned int NUM_EXPERIMENTS = 100;
 // Percentage of insert operations.
 const unsigned int PERCENTAGE_INSERTIONS = 40;
 // Size of the hashtable.
-const unsigned int NUM_ENTRIES = 3;    
+const unsigned int NUM_ENTRIES = 1;    
 // Test data structures?
 const bool TEST_DATA_STRUCTURES = true;
 // Number of elements for testing.
 const unsigned int NUM_ELEMENTS_FOR_TEST = 1000;
 // Output type.
-const outputEnum_t outputType = ONFILE;
+const outputEnum_t outputType = ONCONSOLE;
 
 // Output pointer (for printing).
 FILE* outputPointer;
@@ -515,11 +515,11 @@ int main() {
  * @return Created linked list node.
  */
 linkedListNode_t* createLinkedListNode(const int v) {
-    linkedListNode_t *x = malloc(sizeof(linkedListNode_t));
-    x->value=v;
-    x->next=NULL;
-    x->prev=NULL;
-    return x;
+    linkedListNode_t *node = malloc(sizeof(linkedListNode_t));
+    node->value=v;
+    node->next=NULL;
+    node->prev=NULL;
+    return node;
 }
 
 /**
@@ -527,10 +527,10 @@ linkedListNode_t* createLinkedListNode(const int v) {
  * @return Created linked list.
  */
 linkedList_t* createLinkedList() {
-    linkedList_t *l = malloc(sizeof(linkedList_t));
-    l->head=NULL;
-    l->size=0;
-    return l;
+    linkedList_t *list = malloc(sizeof(linkedList_t));
+    list->size=0;
+    list->head=NULL;
+    return list;
 }
 
 /**
@@ -538,13 +538,13 @@ linkedList_t* createLinkedList() {
  * @param list The linked list.
  * @param x Linked list node to be inserted.
  */
-void linkedListInsert(linkedList_t* l, linkedListNode_t* x) {
-    x->next=l->head;
-    if(l->head != NULL)
-        l->head->prev=x;
-    l->head = x;
+void linkedListInsert(linkedList_t* list, linkedListNode_t* x) {
+    x->next=list->head;
+    if(list->head != NULL)
+        list->head->prev=x;
+    list->head = x;
     x->prev=NULL;
-    l->size++;
+    list->size++;
 }
 
 /**
@@ -554,11 +554,11 @@ void linkedListInsert(linkedList_t* l, linkedListNode_t* x) {
  * @return First linked list node containing such value, if it exists; otherwise, NULL.
 */
 linkedListNode_t* linkedListSearch(linkedList_t* list, const int v) {
-    linkedListNode_t *x;
-    x = list->head;
-    while(x!=NULL && x->value != v)
-        x = x->next;
-    return x;
+    linkedListNode_t *node;
+    node = list->head;
+    while(node!=NULL && node->value != v)
+        node = node->next;
+    return node;
 }
 
 /**
@@ -567,13 +567,11 @@ linkedListNode_t* linkedListSearch(linkedList_t* list, const int v) {
  * @param x The linked list node to be deleted.
  */
 void linkedListDelete(linkedList_t* list, linkedListNode_t* x) {
-    if(x->prev != NULL)
-    {
+    if(x->prev != NULL) 
         x->prev->next=x->next;
-    }else{
+    else 
         list->head=x->next;
-    }
-    if(x->next != NULL)
+    if(x->next != NULL) 
         x->next->prev=x->prev;
     list->size = list->size -1;
     free(x);
@@ -584,10 +582,10 @@ void linkedListDelete(linkedList_t* list, linkedListNode_t* x) {
  * @param list Linked list to be printed.
  */
 void linkedListPrint(linkedList_t* list) {
-    linkedListNode_t* x = list->head;
-    while (x) {
-        fprintf(stdout, "%d ", x->value);
-        x = x->next;
+    linkedListNode_t* node = list->head;
+    while (node) {
+        fprintf(stdout, "%d ", node->value);
+        node = node->next;
     }
 }
 
@@ -617,19 +615,13 @@ void linkedListFree(linkedList_t* list) {
 hashtable_t* createHashtable(const unsigned int s) {
   hashtable_t* hash = malloc(sizeof(hashtable_t));
   hashtableEntry_t *head;
-  if(!hash){
-    return NULL;
-  }
+  if(!hash) return NULL;
   hash->entry = malloc(sizeof(hashtableEntry_t)*s);
-  if(!hash->entry){
-    return NULL;
-  }
+  if(!hash->entry) return NULL;
   hash->size=s;
   for(int i = 0; i<hash->size;i++){
-     head = malloc(sizeof(hashtableEntry_t));
-     if(!head){
-        return NULL;
-  }
+    head = malloc(sizeof(hashtableEntry_t));
+    if(!head) return NULL;
     head->list = createLinkedList();
     hash->entry[i] = head;
   }
@@ -654,8 +646,8 @@ const unsigned int hashFunction(hashtable_t* hashtbl, const int v) {
  */
 void hashtableInsert(hashtable_t* hashtbl, const int v) {
     int hash = hashFunction(hashtbl,v);
-    linkedListNode_t *x = createLinkedListNode(v);
-    linkedListInsert(hashtbl->entry[hash]->list,x);
+    linkedListNode_t *node = createLinkedListNode(v);
+    linkedListInsert(hashtbl->entry[hash]->list,node);
 }
 
 /**
@@ -665,8 +657,8 @@ void hashtableInsert(hashtable_t* hashtbl, const int v) {
  * @return Linked list node containing such value, if it exists; otherwise, NULL.
  */
 linkedListNode_t* hashtableSearch(hashtable_t* hashtbl, const int v) {
-    int i = hashFunction(hashtbl,v);
-    return linkedListSearch(hashtbl->entry[i]->list,v);
+    int hash = hashFunction(hashtbl,v);
+    return linkedListSearch(hashtbl->entry[hash]->list,v);
 }
 
 /**
@@ -675,8 +667,8 @@ linkedListNode_t* hashtableSearch(hashtable_t* hashtbl, const int v) {
  * @param x Linked list node to be deleted.
  */
 void hashtableDelete(hashtable_t* hashtbl, linkedListNode_t* x) {
-    int i = hashFunction(hashtbl,x->value);
-    linkedListDelete(hashtbl->entry[i]->list,x);
+    int hash = hashFunction(hashtbl,x->value);
+    linkedListDelete(hashtbl->entry[hash]->list,x);
 }
 
 /**
@@ -698,18 +690,16 @@ void hashtablePrint(hashtable_t* hashtbl) {
 bool hashtableTest() {
     bool test;
     int A[NUM_ELEMENTS_FOR_TEST];
-    hashtable_t * hash = createHashtable(NUM_ELEMENTS_FOR_TEST);
+    hashtable_t * hashtbl = createHashtable(NUM_ELEMENTS_FOR_TEST);
     linkedListNode_t *nodo;
     for (int i = 0; i<NUM_ELEMENTS_FOR_TEST;i++){
         A[i]=0;
-        hashtableInsert(hash,A[i]);
-        nodo = hashtableSearch(hash,A[i]);
-        if(nodo->value==A[i])
-            test=true;
-        else
-            test=false;
+        hashtableInsert(hashtbl,A[i]);
+        nodo = hashtableSearch(hashtbl,A[i]);
+        if(nodo->value==A[i]) test=true;
+        else test=false;
     }
-    hashtableFree(hash);
+    hashtableFree(hashtbl);
     return test;
 }
 
@@ -891,12 +881,12 @@ void rbtInsertFixup(rbt_t* rbt, rbtNode_t* z) {
  * @return RBT node containing the value, if it exists; otherwise, NULL.
  */
 rbtNode_t* rbtSearch(rbt_t* rbt, const int v) {
-    rbtNode_t *x = rbt->root;
-    while(x!=rbt->nil && v!=x->value){
-        if(v<x->value) x=x->left;
-        else x=x->right;     
+    rbtNode_t *node = rbt->root;
+    while(node!=rbt->nil && v!=node->value){
+        if(v<node->value) node=node->left;
+        else node=node->right;     
     }
-    return x;
+    return node;
 
 }
 
@@ -919,13 +909,12 @@ void rbtInOrder(rbt_t* rbt, rbtNode_t* x) {
  */
 bool rbtTest() {
     bool test, testSearch;
-    rbt_t * rbt = createRbt();
+    rbt_t *rbt = createRbt();
     rbtNode_t *nodo;
     for (int i = 0; i< NUM_ELEMENTS_FOR_TEST ;i++){
         nodo = createRbtNode(i);
         rbtInsert(rbt,nodo);
     }
-
     for(int j=0;j<NUM_ELEMENTS_FOR_TEST;j++)
     {
         nodo = rbtSearch(rbt,j);
@@ -934,7 +923,6 @@ bool rbtTest() {
     }
     if(testSearch && isRbt(rbt)) test = true;
     else test = false;
-
     rbtFree(rbt);
     return test;
 }
@@ -955,17 +943,17 @@ bool isRbt(rbt_t* rbt) {
  * @return True if it is; otherwise, false.
  */
 bool rbtHasBstProperty(rbt_t* rbt) {
-    rbtNode_t *x=rbt->root;
+    rbtNode_t *node=rbt->root;
     rbtTestStructure_t *testStructure = malloc(sizeof(rbtTestStructure_t));
     testStructure->index = 0;
     testStructure->A = malloc(sizeof(rbtTestStructure_t)*rbt->size);
-    rbtHasBstPropertyUtil(rbt,x,testStructure);
+    rbtHasBstPropertyUtil(rbt,node,testStructure);
     if(isSorted(testStructure->A,testStructure->index)){
-    free(testStructure->A);
+        free(testStructure->A);
         free(testStructure);
-        x = rbt->root;
-        if(x!= rbt->nil && x->left != rbt->nil && x->right != rbt->nil){
-            if(x->left->value < x->value && x->right->value >= x->value) return true;
+        node = rbt->root;
+        if(node!= rbt->nil && node->left != rbt->nil && node->right != rbt->nil){
+            if(node->left->value < node->value && node->right->value >= node->value) return true;
             else return false;
         }
     }
@@ -1079,7 +1067,6 @@ clock_t doExperiment(int* randomArray, const unsigned int numInsertions, const u
     clock_t start,end=0;
     linkedListNode_t* nodeHashTable; //Genera warning: non in uso ma necessaria per fare test
     int key, i;
-
     start=clock();
     if(strcmp(dataStructure, "hashtable")==0){
         for(i=0; i<numInsertions; i++){
