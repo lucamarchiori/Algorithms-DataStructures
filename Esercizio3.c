@@ -24,15 +24,15 @@ APPUNTI LEZIONE
 		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
 	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non pu? essere superato.
 	
-	CODE DI PRIORIT? COME ARRAY:
+	CODE DI PRIORITA COME ARRAY:
 	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
-	Decrease key = cambiare priorit? del vertice x = accedi in posizione x e assegna vuovo peso.
+	Decrease key = cambiare priorita del vertice x = accedi in posizione x e assegna vuovo peso.
 	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
 	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
 	
-	CODE DI PRIORIT? COME MINHEAP:
-	Min heap quindi ? semi ordinata su priorit? vertice (non sul nome). Ogni nodo della minheap ? una coppia.
-	Decrease key = cambiare priorit? del vertice x = per evitare di scorrere tutto l`array,
+	CODE DI PRIORITA COME MINHEAP:
+	Min heap quindi è semi ordinata su priorita vertice (non sul nome). Ogni nodo della minheap è una coppia.
+	Decrease key = cambiare priorita del vertice x = per evitare di scorrere tutto l`array,
 	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
 	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
 	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
@@ -54,12 +54,12 @@ APPUNTI LEZIONE
 
 // ##### LIBRARIES ##### //
 
-#include <stdio.h>      // input-output library.
-#include <stdlib.h>     // standard library.
-#include <stdbool.h>    // standard boolean library.
-#include <limits.h>     // limits library.
-#include <time.h>       // time library.
-#include <string.h>     // string library.
+#include <stdio.h>   // input-output library.
+#include <stdlib.h>  // standard library.
+#include <stdbool.h> // standard boolean library.
+#include <limits.h>  // limits library.
+#include <time.h>    // time library.
+#include <string.h>  // string library.
 
 // ##### End of LIBRARIES ##### //
 
@@ -70,7 +70,8 @@ APPUNTI LEZIONE
 /**
  * @brief Min-heap node data structure.
  */
-typedef struct min_heap_node_t {
+typedef struct min_heap_node_t
+{
     // Vertex number.
     int vertex_number;
     // Estimated distance from the source; needed for, e.g., extracting the minimum.
@@ -80,15 +81,16 @@ typedef struct min_heap_node_t {
 /**
  * @brief Min-heap data structure.
  */
-typedef struct min_heap_t {
+typedef struct min_heap_t
+{
     // Heap size.
     int heap_size;
     // Length of the array.
     int array_length;
     // Array of positions; needed for, e.g., decreasing the key.
-    int* P;
+    int *P;
     // Array of pointers of min-heap nodes.
-    min_heap_node_t** A;
+    min_heap_node_t **A;
 } min_heap_t;
 
 // ----- End of MIN-HEAP ----- //
@@ -97,7 +99,8 @@ typedef struct min_heap_t {
 /**
  * @brief Queue node data structure.
  */
-typedef struct queue_node_t {
+typedef struct queue_node_t
+{
     // Vertex number.
     int vertex_number;
     // Estimated distance from the source; needed for, e.g., extracting the minimum.
@@ -109,13 +112,14 @@ typedef struct queue_node_t {
 /**
  * @brief Queue data structure.
  */
-typedef struct queue_t {
+typedef struct queue_t
+{
     // Queue size.
     int queue_size;
     // Array length.
     int array_length;
     // Array of pointers of queue nodes.
-    queue_node_t** A;
+    queue_node_t **A;
 } queue_t;
 
 // ----- QUEUE ----- //
@@ -125,33 +129,36 @@ typedef struct queue_t {
 /**
  * @brief Adjacency list node data structure.
  */
-typedef struct adj_list_node_t {
+typedef struct adj_list_node_t
+{
     // Target vertex number. (Note that this is called v in the text book.)
     int target;
     // Weight of the edge (u,v).
     int weight;
     // Next node.
-    struct adj_list_node_t* next; 
+    struct adj_list_node_t *next;
 } adj_list_node_t;
 
 /**
  * @brief Adjacency list data structure.
  */
-typedef struct adj_list_t {
+typedef struct adj_list_t
+{
     // Head of the list.
-    adj_list_node_t* head;
+    adj_list_node_t *head;
 } adj_list_t;
 
 /**
  * @brief Graph data structure.
  */
-typedef struct graph_t {
+typedef struct graph_t
+{
     // Number of vertices.
     int number_vertices;
     // Number of edges.
     int number_edges;
     // Adjacency list.
-    adj_list_t* adj;
+    adj_list_t *adj;
 } graph_t;
 
 // ----- End of GRAPH ----- //
@@ -161,9 +168,10 @@ typedef struct graph_t {
 /**
  * @brief Enumeration data type for the output.
  */
-typedef enum output_enum_t {
-    ONCONSOLE,  // On console.
-    ONFILE      // On file.
+typedef enum output_enum_t
+{
+    ONCONSOLE, // On console.
+    ONFILE     // On file.
 } output_enum_t;
 
 // ----- End of AUXILIARY DATA STRUCTURES ----- //
@@ -173,15 +181,15 @@ typedef enum output_enum_t {
 // ##### GLOBAL VARIABLES ##### //
 
 // Random seed (important for reproducibility).
-const time_t RANDOM_SEED = 20;
+const time_t RANDOM_SEED = 17;
 // Minimum number of vertices.
-const unsigned int MIN_NUM_VERTICES = 5; //10
+const unsigned int MIN_NUM_VERTICES = 10; //10
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 5|497 |496 |262; //1000
+const unsigned int MAX_NUM_VERTICES = 50; //1000
 // Step from one experiment to another.
 const unsigned int STEP_EXPERIMENTS = 10;
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 1; //50 
+const unsigned int NUM_EXPERIMENTS = 25; //50
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
@@ -191,7 +199,7 @@ const unsigned int MAX_WEIGHT = 1000;
 // Output type.
 const output_enum_t output_type = ONCONSOLE;
 // Output pointer (for printing).
-FILE* output_pointer;
+FILE *output_pointer;
 
 // ##### End of GLOBAL VARIABLES ##### //
 
@@ -204,9 +212,9 @@ FILE* output_pointer;
  * @param i Index for computing the parent index.
  * @return Parent index.
  */
-int heap_parent_index(const unsigned int i) {
-	 //OK - CORRETTO
-    return (i-1)>>1; // Subtract 1 from i, then shift right the bit-representation by 1 position; English version of the CLRS text-book, pg. 152.
+int heap_parent_index(const unsigned int i)
+{
+    return (i - 1) >> 1; // Subtract 1 from i, then shift right the bit-representation by 1 position; English version of the CLRS text-book, pg. 152.
 }
 
 /**
@@ -214,9 +222,9 @@ int heap_parent_index(const unsigned int i) {
  * @param i Index for computing the left index.
  * @return Left index.
  */
-int heap_left_index(const unsigned int i) {
-	 //OK - CORRETTO
-    return (i<<1)+1; // Shift left the bit-representation of i, then add 1 as lower bit; English version of the CLRS text-book, pg. 152.
+int heap_left_index(const unsigned int i)
+{
+    return (i << 1) + 1; // Shift left the bit-representation of i, then add 1 as lower bit; English version of the CLRS text-book, pg. 152.
 }
 
 /**
@@ -224,8 +232,9 @@ int heap_left_index(const unsigned int i) {
  * @param i Index for computing the right index.
  * @return Right index.
  */
-int heap_right_index(const unsigned int i) {
-    return (i<<1)+2; // Shift left the bit-representation of i, then add 2 as lower bit; English version of the CLRS text-book, pg. 152.
+int heap_right_index(const unsigned int i)
+{
+    return (i << 1) + 2; // Shift left the bit-representation of i, then add 2 as lower bit; English version of the CLRS text-book, pg. 152.
 }
 
 /**
@@ -234,11 +243,12 @@ int heap_right_index(const unsigned int i) {
  * @param distance Estimated distance from source.
  * @return Newly created node.
  */
-min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	min_heap_node_t *nodo = malloc(2*sizeof(min_heap_node_t));
+min_heap_node_t *min_heap_create_node(const unsigned int vertex_number, const unsigned int distance)
+{
+    min_heap_node_t *nodo = (min_heap_node_t *)malloc(sizeof(min_heap_node_t));
     nodo->vertex_number = vertex_number;
     nodo->distance = distance;
-	return nodo;
+    return nodo;
 }
 
 /**
@@ -246,8 +256,9 @@ min_heap_node_t* min_heap_create_node(const unsigned int vertex_number, const un
  * @param x First node.
  * @param y Second node.
  */
-void min_heap_swap(min_heap_node_t** x, min_heap_node_t** y) {
-    min_heap_node_t* temp = *x;
+void min_heap_swap(min_heap_node_t **x, min_heap_node_t **y)
+{
+    min_heap_node_t *temp = *x;
     *x = *y;
     *y = temp;
     return;
@@ -258,31 +269,26 @@ void min_heap_swap(min_heap_node_t** x, min_heap_node_t** y) {
  * @param H Heap to be heapified.
  * @param i Index needed by the procedure.
  */
-void min_heap_heapify(min_heap_t* H, const unsigned int i) {
-	int l = heap_left_index(i);
-	int r = heap_right_index(i);
-	int smallest = i;
+void min_heap_heapify(min_heap_t *H, const unsigned int i)
+{
+    int l = heap_left_index(i);
+    int r = heap_right_index(i);
+    int smallest = i;
     min_heap_node_t *smallestNode;
-	min_heap_node_t *i_node;
-
-	if(l<H->heap_size && (H->A[l]->distance)<(H->A[smallest]->distance))
-	{
-		smallest = l;
-	}
-	if(r<H->heap_size && (H->A[r]->distance)<(H->A[smallest]->distance))
-	{
-		smallest = r;
-	}  
-	if(smallest != i)
-	{
+    min_heap_node_t *i_node;
+    if (l < H->heap_size && (H->A[l]->distance) < (H->A[smallest]->distance))
+        smallest = l;
+    if (r < H->heap_size && (H->A[r]->distance) < (H->A[smallest]->distance))
+        smallest = r;
+    if (smallest != i)
+    {
         smallestNode = H->A[smallest];
         i_node = H->A[i];
         H->P[smallestNode->vertex_number] = i;
         H->P[i_node->vertex_number] = smallest;
-		min_heap_swap(&H->A[i],&H->A[smallest]);
-		min_heap_heapify(H,smallest);
-	}
-	 
+        min_heap_swap(&H->A[i], &H->A[smallest]);
+        min_heap_heapify(H, smallest);
+    }
     return;
 }
 
@@ -291,12 +297,13 @@ void min_heap_heapify(min_heap_t* H, const unsigned int i) {
  * @param array_length Array length.
  * @return Newly create min-heap.
  */
-min_heap_t min_heap_create(const unsigned int array_length) {
+min_heap_t min_heap_create(const unsigned int array_length)
+{
     min_heap_t H;
     H.P = malloc(array_length * sizeof(int));
     H.A = malloc(array_length * sizeof(min_heap_node_t *));
     H.array_length = array_length;
-    H.heap_size=0;   
+    H.heap_size = 0;
     return H;
 }
 
@@ -305,11 +312,12 @@ min_heap_t min_heap_create(const unsigned int array_length) {
  * @param H Min-heap.
  * @return true if it is.
  */
-bool min_heap_is_empty(min_heap_t* H) {
-	if(H->heap_size == 0)
-	    return true;
-	else
-		return false;
+bool min_heap_is_empty(min_heap_t *H)
+{
+    if (H->heap_size == 0)
+        return true;
+    else
+        return false;
 }
 
 /**
@@ -317,21 +325,23 @@ bool min_heap_is_empty(min_heap_t* H) {
  * @param H Min-heap.
  * @return Min-heap node containing the minimum (estimated distance from the source).
  */
-min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
-    min_heap_node_t* root;
-    min_heap_node_t* last_node;
-	if(!min_heap_is_empty(H))
-	{
-        root = H->A[0];
-        last_node = H->A[H->heap_size-1];
-        H->A[0] = last_node;
-        H->P[root->vertex_number] = H->heap_size-1;
-        H->P[last_node->vertex_number] = 0;
-        H->heap_size --;
-		min_heap_heapify(H, 0);
-    	return root;
-	}
-    else exit(1);
+min_heap_node_t *min_heap_extract_min(min_heap_t *H)
+{
+    min_heap_node_t *node_min;
+    if (!min_heap_is_empty(H))
+    {
+        node_min = H->A[0];
+        //Scambio ultimo con il primo
+        H->A[0] = H->A[H->heap_size - 1];
+        H->A[H->heap_size - 1] = node_min;
+        H->P[node_min->vertex_number] = H->heap_size - 1;
+        H->P[H->A[0]->vertex_number] = 0;
+        H->heap_size--;
+        min_heap_heapify(H, 0);
+        return node_min;
+    }
+    else
+        return NULL;
 }
 
 /**
@@ -340,21 +350,24 @@ min_heap_node_t* min_heap_extract_min(min_heap_t* H) {
  * @param vertex_number Vertex number.
  * @param distance New distance/key.
  */
-void min_heap_decrease_key(min_heap_t* H, unsigned int vertex_number, const unsigned int distance) {
-	int i,parent;
-    if(distance<(H->A[vertex_number]->distance))
-	{
+void min_heap_decrease_key(min_heap_t *H, unsigned int vertex_number, const unsigned int distance)
+{
+    int i;
+    //Se nuova distanza è inferiore alla distanza attuale
+    if (distance < (H->A[vertex_number]->distance))
+    {
         i = H->P[vertex_number];
         H->A[i]->distance = distance;
-        parent = (i-1)/2;
-        while ( H->A[i]->distance < H->A[parent]->distance && i)
+        //Se il nodo ha una distanza minore del suo padre allora li scambio
+        while (H->A[i]->distance < H->A[(i - 1) / 2]->distance && i)
         {
-            H->P[H->A[i]->vertex_number] = parent;
-            H->P[H->A[parent]->vertex_number] = i;
-            min_heap_swap(&H->A[i], &H->A[parent]);
-            i=parent;
+            min_heap_swap(&H->A[i], &H->A[(i - 1) / 2]);
+            //Scambio anche in P
+            H->P[H->A[i]->vertex_number] = (i - 1) / 2;
+            H->P[H->A[(i - 1) / 2]->vertex_number] = i;
+            i = (i - 1) / 2;
         }
-	}
+    }
     return;
 }
 
@@ -362,14 +375,16 @@ void min_heap_decrease_key(min_heap_t* H, unsigned int vertex_number, const unsi
  * @brief Min-heap free.
  * @param H Min-heap.
  */
-void min_heap_free(min_heap_t* H) {
+void min_heap_free(min_heap_t *H)
+{
 
     for (int i = 0; i < H->array_length; i++)
     {
-        free(H->A[i]);
+        if (H->A[i])
+            free(H->A[i]);
     }
-    free(H->A);
     free(H->P);
+    free(H->A);
     return;
 }
 
@@ -383,11 +398,12 @@ void min_heap_free(min_heap_t* H) {
  * @param distance Estimated distance from the source.
  * @return Newly create node.
  */
-queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned int distance) {
-	queue_node_t *nodo = malloc(sizeof(queue_node_t));
-	nodo->distance = distance;
-	nodo->vertex_number = vertex_number;
-	nodo->present = true;
+queue_node_t *queue_create_node(const unsigned int vertex_number, const unsigned int distance)
+{
+    queue_node_t *nodo = malloc(sizeof(queue_node_t));
+    nodo->distance = distance;
+    nodo->vertex_number = vertex_number;
+    nodo->present = true;
     return nodo;
 }
 
@@ -396,11 +412,12 @@ queue_node_t* queue_create_node(const unsigned int vertex_number, const unsigned
  * @param array_length Array length.
  * @return Newly create queue.
  */
-queue_t queue_create(const unsigned int array_length) {
+queue_t queue_create(const unsigned int array_length)
+{
     queue_t Q;
     Q.array_length = array_length;
     Q.queue_size = 0;
-    Q.A = malloc(array_length * sizeof(queue_node_t**));
+    Q.A = malloc(array_length * sizeof(queue_node_t *));
     return Q;
 }
 
@@ -409,37 +426,52 @@ queue_t queue_create(const unsigned int array_length) {
  * @param Q Queue.
  * @return true if it is.
  */
-bool queue_is_empty(queue_t* Q) {
-	if (Q->queue_size == 0)
-		return true;
-	else
-		return false;
+bool queue_is_empty(queue_t *Q)
+{
+    if (Q->queue_size == 0)
+        return true;
+    else
+        return false;
 }
 
 /**
  * @brief Extract minimum from queue.
  * @param Q Queue.
  * @return Queue node containing the minimum (estimated distance from the source).
+ * Extract min =  scorri tutto array ed estrai elemento con peso minore.
  */
-queue_node_t* queue_extract_min(queue_t* Q) {
-	queue_node_t* min;
-	int index = 0;
-	int min_dis = INT_MAX;
-	for(int i=0; i<Q->array_length; i++)
-	{
-		if(Q->A[i]->present && Q->A[i]->distance<min_dis)
-		{
-			min = Q->A[i];
-			min_dis =  min->distance;
-			index = i;
-		}
-	}
-	if(Q->A[index]->present == true)
-	{
-        min = Q->A[index];
-		Q->A[index]->present = false;
-	}
-    return min;
+queue_node_t *queue_extract_min(queue_t *Q)
+{
+    if (!queue_is_empty(Q))
+    {
+        int index_min = -1;
+        queue_node_t *node_min = NULL;
+        for (int i = 0; i < Q->array_length; i++)
+        {
+            if (Q->A[i]->present)
+            {
+                if (index_min == -1)
+                {
+                    index_min = i;
+                    node_min = Q->A[i];
+                }
+                else if (Q->A[i]->distance < Q->A[index_min]->distance)
+                {
+                    index_min = i;
+                    node_min = Q->A[i];
+                }
+            }
+        }
+        if (index_min == -1)
+            return NULL;
+        node_min->present = false;
+        Q->queue_size--;
+        return node_min;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 /**
@@ -447,24 +479,27 @@ queue_node_t* queue_extract_min(queue_t* Q) {
  * @param Q Queue.
  * @param vertex_number Vertex number.
  * @param distance New distance/key.
+ * Decrease key = cambiare priorita del vertice x. Accedi in posizione x e assegna vuovo peso.
  */
-void queue_decrease_key(queue_t* Q, const unsigned int vertex_number, const unsigned int distance) {
-    if(Q->A[vertex_number]->distance > distance && (Q->A[vertex_number]->present))
+void queue_decrease_key(queue_t *Q, const unsigned int vertex_number, const unsigned int distance)
+{
+    if (Q->A[vertex_number]->distance > distance && (Q->A[vertex_number]->present))
     {
-    	Q->A[vertex_number]->distance = distance;
-	}
-	return;
+        Q->A[vertex_number]->distance = distance;
+    }
+    return;
 }
 
 /**
  * @brief Queue free.
  * @param Q Queue.
  */
-void queue_free(queue_t* Q) {
-	for(int i = 0; i<Q->array_length;i++)
-	{
+void queue_free(queue_t *Q)
+{
+    for (int i = 0; i < Q->array_length; i++)
+    {
         free(Q->A[i]);
-	}
+    }
     free(Q->A);
     return;
 }
@@ -478,11 +513,11 @@ void queue_free(queue_t* Q) {
  * @param L Adjacency list.
  * @param x Adjacency list node to be inserted.
  */
-void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
+void adj_list_insert_node(adj_list_t *L, adj_list_node_t *x)
+{
     x->next = L->head;
     L->head = x;
-   	return;
-
+    return;
 }
 
 /**
@@ -491,10 +526,12 @@ void adj_list_insert_node(adj_list_t* L, adj_list_node_t* x) {
  * @param weight Weight of the edge.
  * @return Newly created node.
  */
-adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned int weight) {
-	adj_list_node_t *nodo = malloc(sizeof(adj_list_node_t));
+adj_list_node_t *adj_list_create_node(const unsigned int target, const unsigned int weight)
+{
+    adj_list_node_t *nodo = malloc(sizeof(adj_list_node_t));
     nodo->target = target;
-	nodo->weight = weight;
+    nodo->weight = weight;
+    nodo->next = NULL;
     return nodo;
 }
 
@@ -505,10 +542,12 @@ adj_list_node_t* adj_list_create_node(const unsigned int target, const unsigned 
  * @param target Target vertex number.
  * @param weight Weight of the edge.
  */
-void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int target, const unsigned int weight) {
-    adj_list_node_t* nodo = adj_list_create_node(target,weight);
+void graph_add_edge(graph_t *G, const unsigned int source, const unsigned int target, const unsigned int weight)
+{
+    adj_list_node_t *nodo = adj_list_create_node(target, weight);
     adj_list_insert_node(&G->adj[source], nodo);
-	return;
+    G->number_edges++;
+    return;
 }
 
 /**
@@ -517,29 +556,28 @@ void graph_add_edge(graph_t* G, const unsigned int source, const unsigned int ta
  * @param edge_prob Edge probability
  * @return Newly create graph.
  */
-graph_t graph_create(unsigned const int number_vertices, const double edge_prob) {
+graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
+{
     graph_t G;
     G.number_vertices = number_vertices;
     G.adj = malloc(number_vertices * sizeof(adj_list_node_t));
-    int prob = 0;
+    int prob;
     int weight;
-    for(int i = 0; i<number_vertices; i++)
+    for (int i = 0; i < number_vertices; i++)
     {
-    	G.adj[i].head = NULL;
-    	for(int j = 0; j<number_vertices; j++)
-    	{
-    		prob = rand()%100;
-				if(i!=j && (prob>edge_prob))
-				{
-                    weight = rand()%MAX_WEIGHT;
-                    graph_add_edge(&G,i,j,weight);
-				}
-		}
-    	
-	}
+        G.adj[i].head = NULL;
+        for (int j = 0; j < number_vertices; j++)
+        {
+            prob = rand() % 100 + 1;
+            if (i != j && (prob < edge_prob))
+            {
+                weight = rand() % MAX_WEIGHT;
+                graph_add_edge(&G, i, j, weight);
+            }
+        }
+    }
     return G;
 }
-
 
 /**
  * @brief Create (non-empty) custom graph (Figure 24.6 - page 659 - Introduction to Algorithms (H. Cormen) ).
@@ -550,7 +588,8 @@ graph_t graph_create(unsigned const int number_vertices, const double edge_prob)
  * Vertex x in the figure is vertex 3 in the graph
  * Vertex z in the figure is vertex 4 in the graph
  */
-graph_t graph_test_manual_creation() {
+graph_t graph_test_manual_creation()
+{
     int number_vertices = 5;
     int v = 0;
     graph_t G;
@@ -558,34 +597,34 @@ graph_t graph_test_manual_creation() {
     G.adj = malloc(number_vertices * sizeof(adj_list_node_t));
 
     //Vertex 0
-    v=0;
+    v = 0;
     G.adj[v].head = NULL;
-    graph_add_edge(&G,v,1,10);
-    graph_add_edge(&G,v,2,5);
+    graph_add_edge(&G, v, 1, 10);
+    graph_add_edge(&G, v, 2, 5);
 
     //Vertex 1
-    v=1;
+    v = 1;
     G.adj[v].head = NULL;
-    graph_add_edge(&G,v,3,1);
-    graph_add_edge(&G,v,2,2);
+    graph_add_edge(&G, v, 3, 1);
+    graph_add_edge(&G, v, 2, 2);
 
     //Vertex 2
-    v=2;
+    v = 2;
     G.adj[v].head = NULL;
-    graph_add_edge(&G,v,1,3);
-    graph_add_edge(&G,v,3,9);
-    graph_add_edge(&G,v,4,2);
+    graph_add_edge(&G, v, 1, 3);
+    graph_add_edge(&G, v, 3, 9);
+    graph_add_edge(&G, v, 4, 2);
 
     //Vertex 3
-    v=3;
+    v = 3;
     G.adj[v].head = NULL;
-    graph_add_edge(&G,v,4,4);
+    graph_add_edge(&G, v, 4, 4);
 
     //Vertex 4
-    v=4;
+    v = 4;
     G.adj[v].head = NULL;
-    graph_add_edge(&G,v,3,6);
-    graph_add_edge(&G,v,0,7);
+    graph_add_edge(&G, v, 3, 6);
+    graph_add_edge(&G, v, 0, 7);
 
     return G;
 }
@@ -594,16 +633,17 @@ graph_t graph_test_manual_creation() {
  * @brief Free graph.
  * @param G Graph.
  */
-void graph_free(graph_t* G) {
+void graph_free(graph_t *G)
+{
     adj_list_t list;
-    adj_list_node_t* x;
-    for (int i=0; i<G->number_vertices; i++) 
+    adj_list_node_t *x;
+    for (int i = 0; i < G->number_vertices; i++)
     {
         list = G->adj[i];
-        while (list.head!=NULL)
+        while (list.head != NULL)
         {
-            x= list.head;
-            list.head=list.head->next;
+            x = list.head;
+            list.head = list.head->next;
             free(x);
         }
     }
@@ -619,14 +659,18 @@ void graph_free(graph_t* G) {
  * @brief Print graph.
  * @param G Graph.
  */
-void graph_print(graph_t* G) {
+void graph_print(graph_t *G)
+{
 
     fprintf(stdout, "G->number_vertices=%d\n", G->number_vertices);
-    for (int u=0; u<G->number_vertices; u++) {
+    for (int u = 0; u < G->number_vertices; u++)
+    {
         fprintf(stdout, "adj[u=%d] ==> ", u);
-        adj_list_node_t* x = G->adj[u].head;
-        if (!x) printf("NULL\n");
-        while (x) {
+        adj_list_node_t *x = G->adj[u].head;
+        if (!x)
+            printf("NULL\n");
+        while (x)
+        {
             if (x->next)
                 fprintf(stdout, "(v=%d, w=%d), ", x->target, x->weight);
             else
@@ -642,9 +686,10 @@ void graph_print(graph_t* G) {
  * @param distance Array of distances.
  * @param n Length of the array (i.e., number of vertices of the graph).
  */
-void print_distances(int* distance, unsigned const int num_vertices) {
+void print_distances(int *distance, unsigned const int num_vertices)
+{
     printf("Vertex \t\t Distance\n");
-    for (int u=0; u<num_vertices; u++)
+    for (int u = 0; u < num_vertices; u++)
         printf("%d \t\t %d\n", u, distance[u]);
 }
 
@@ -657,40 +702,42 @@ void print_distances(int* distance, unsigned const int num_vertices) {
  * @param G Graph.
  * @param source Source vertex number.
  */
-void dijkstra(graph_t* G, unsigned const int source, bool showresults) {
+void dijkstra(graph_t *G, unsigned const int source, bool showresults)
+{
     min_heap_t H = min_heap_create(G->number_vertices);
-    min_heap_node_t* h_node;
-    adj_list_node_t* v_node;
-    int u,v;
+    min_heap_node_t *h_node;
+    adj_list_node_t *v_node;
+    int u, v;
     int distances[G->number_vertices];
-    for(int i=0;i<G->number_vertices; i++)
+    for (int i = 0; i < G->number_vertices; i++)
     {
-        distances[i]=INT_MAX;
-        H.A[i]=min_heap_create_node(i, distances[i]);
+        distances[i] = INT_MAX;
+        H.A[i] = min_heap_create_node(i, distances[i]);
         H.heap_size++;
         H.P[i] = i;
     }
-    distances[source]=0;
+    distances[source] = 0;
     H.P[source] = 0;
-    min_heap_decrease_key(&H,source,distances[0]);
+    min_heap_decrease_key(&H, source, distances[0]);
 
     while (!min_heap_is_empty(&H))
     {
-        h_node=min_heap_extract_min(&H);
-        u=h_node->vertex_number;
+        h_node = min_heap_extract_min(&H);
+        u = h_node->vertex_number;
         v_node = G->adj[u].head;
-        while(v_node)
+        while (v_node)
         {
             v = v_node->target;
-            if(v_node->weight+distances[u]<distances[v])
+            if (v_node->weight + distances[u] < distances[v])
             {
-                distances[v] = distances[u]+v_node->weight;
-                min_heap_decrease_key(&H,v,distances[v]);
+                distances[v] = distances[u] + v_node->weight;
+                min_heap_decrease_key(&H, v, distances[v]);
             }
-            v_node=v_node->next;
+            v_node = v_node->next;
         }
     }
-    if(showresults) print_distances(distances,G->number_vertices);
+    if (showresults)
+        print_distances(distances, G->number_vertices);
     min_heap_free(&H);
     return;
 }
@@ -709,40 +756,41 @@ void dijkstra(graph_t* G, unsigned const int source, bool showresults) {
 	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
 	
 */
-void dijkstra_with_queue(graph_t* G, const unsigned int source, bool showresults) {
- 	queue_t Q = queue_create(G->number_vertices);
-    queue_node_t* q_node;
-    adj_list_node_t* v_node;
-    int u,v;
+void dijkstra_with_queue(graph_t *G, const unsigned int source, bool showresults)
+{
+    queue_t Q = queue_create(G->number_vertices);
+    queue_node_t *q_node;
+    adj_list_node_t *v_node;
+    int u, v;
     int distances[G->number_vertices];
 
-    for(int i=0;i<G->number_vertices; i++)
+    for (int i = 0; i < G->number_vertices; i++)
     {
-        distances[i]=INT_MAX;
-        Q.A[i]=queue_create_node(i,distances[i]);
-        Q.queue_size ++;
+        distances[i] = INT_MAX;
+        Q.A[i] = queue_create_node(i, distances[i]);
+        Q.queue_size++;
         Q.A[i]->present = true;
     }
-    queue_decrease_key(&Q,source,0);
+    queue_decrease_key(&Q, source, 0);
     distances[source] = 0;
-    while(!queue_is_empty(&Q))
+    while (!queue_is_empty(&Q))
     {
         q_node = queue_extract_min(&Q);
-        Q.queue_size--;
         u = q_node->vertex_number;
         v_node = G->adj[u].head;
-        while(v_node)
+        while (v_node)
         {
             v = v_node->target;
-            if(v_node->weight+distances[u]<distances[v])
+            if (v_node->weight + distances[u] < distances[v])
             {
-                distances[v] = distances[u]+v_node->weight;
-                queue_decrease_key(&Q,v,distances[v]);
+                distances[v] = distances[u] + v_node->weight;
+                queue_decrease_key(&Q, v, distances[v]);
             }
-            v_node=v_node->next;
+            v_node = v_node->next;
         }
     }
-    if(showresults) print_distances(distances,G->number_vertices);
+    if (showresults)
+        print_distances(distances, G->number_vertices);
     queue_free(&Q);
     return;
 }
@@ -753,25 +801,29 @@ void dijkstra_with_queue(graph_t* G, const unsigned int source, bool showresults
  * @param priority_type Priority type.
  * @return Elapsed time in clocks.
  */
-time_t do_experiment(graph_t* G, char* priority_type) {
+time_t do_experiment(graph_t *G, char *priority_type)
+{
     clock_t start_time, end_time = 0;
-    
     start_time = clock();
-    if (strcmp(priority_type, "min-heap") == 0) dijkstra(G, SOURCE_VERTEX_NUMBER, false);
-    else if (strcmp(priority_type, "queue") == 0) dijkstra_with_queue(G, SOURCE_VERTEX_NUMBER, false);
-    else {
+    if (strcmp(priority_type, "min-heap") == 0)
+        dijkstra(G, SOURCE_VERTEX_NUMBER, false);
+    else if (strcmp(priority_type, "queue") == 0)
+        dijkstra_with_queue(G, SOURCE_VERTEX_NUMBER, false);
+    else
+    {
         fprintf(stderr, "ERROR: The type of the priority can be either min-heap or queue: %s is not allowed\n", priority_type);
         exit(-1);
     }
     end_time = clock();
-    
+
     return end_time - start_time;
 }
 
 /**
  * @brief Test dijkstra with a custom graph
  */
-void test() {
+void test()
+{
     fprintf(output_pointer, "\n");
     fprintf(output_pointer, "+--------------------+------ TESTING ------+---------------------+\n");
     fprintf(output_pointer, "|- Figure 24.6 - P.659 - Introduction to Algorithms (H. Cormen) -|\n");
@@ -780,9 +832,9 @@ void test() {
     graph_t G = graph_test_manual_creation();
     graph_print(&G);
     fprintf(output_pointer, " ---  DIJKSTRA QUEUE RESULT  ----\n");
-    dijkstra_with_queue(&G,0,true);
+    dijkstra_with_queue(&G, 0, true);
     fprintf(output_pointer, " --- DIJKSTRA MINHEAP RESULT ----\n");
-    dijkstra(&G,0,true);
+    dijkstra(&G, 0, true);
     graph_free(&G);
     return;
 }
@@ -794,47 +846,56 @@ void test() {
  * @brief Main function.
  * @return 0 if all ok.
  */
-int main() {
+int main()
+{
     // Random seed initialization.
     srand(RANDOM_SEED);
     // Elapsed time using min heaps.
     clock_t time_min_heap = 0;
     // Elapsed time using queues.
     clock_t time_queue = 0;
-    
+
     // What is the outputPointer?
-    if (output_type == ONCONSOLE || output_type == ONFILE) {
+    if (output_type == ONCONSOLE || output_type == ONFILE)
+    {
         // On console.
-        if (output_type== ONCONSOLE) output_pointer = stdout;
+        if (output_type == ONCONSOLE)
+            output_pointer = stdout;
         // On file.
-        else {
+        else
+        {
             // Open file.
             output_pointer = fopen("results.txt", "w");
             // Have we opened the file?
-            if (output_pointer == NULL) {
+            if (output_pointer == NULL)
+            {
                 fprintf(stderr, "ERROR: The output_pointer has not been created\n");
                 exit(-1);
             }
         }
     }
     // Error.
-    else {
+    else
+    {
         fprintf(stderr, "ERROR: The output_type can be only ONCONSOLE or ONFILE\n");
         exit(-1);
     }
-    
+
     // Print the header, only if it is on console.
-    if (output_type == ONCONSOLE) {
+    if (output_type == ONCONSOLE)
+    {
         fprintf(output_pointer, "+--------------------+---------------------+---------------------+\n");
         fprintf(output_pointer, "| Number of vertices | Min heap            | Queue               |\n");
         fprintf(output_pointer, "+--------------------+---------------------+---------------------+\n");
     }
-    
-    for (int num_vertices=MIN_NUM_VERTICES; num_vertices<=MAX_NUM_VERTICES; num_vertices+=STEP_EXPERIMENTS) {
+
+    for (int num_vertices = MIN_NUM_VERTICES; num_vertices <= MAX_NUM_VERTICES; num_vertices += STEP_EXPERIMENTS)
+    {
         // Reset the elapsed times.
         time_min_heap = time_queue = 0;
-        
-        for (int experiment=0; experiment<NUM_EXPERIMENTS; experiment++) {
+
+        for (int experiment = 0; experiment < NUM_EXPERIMENTS; experiment++)
+        {
             // Create the graph.
             graph_t G = graph_create(num_vertices, EDGE_PROBABILITY);
             // Time with min heap.
@@ -843,24 +904,20 @@ int main() {
             time_queue += do_experiment(&G, "queue");
             graph_free(&G);
         }
-        
+
         // Printing the (sample mean as) result. Use TAB (\t) on file.
         if (output_type == ONCONSOLE)
-            fprintf(output_pointer, "| %17d  | %19f | %19f |\n", 
-                num_vertices, 
-                (float) time_min_heap/NUM_EXPERIMENTS, 
-                (float) time_queue/NUM_EXPERIMENTS);
-        
+            fprintf(output_pointer, "| %17d  | %19f | %19f |\n",
+                    num_vertices,
+                    (float)time_min_heap / NUM_EXPERIMENTS,
+                    (float)time_queue / NUM_EXPERIMENTS);
+
         else
             fprintf(output_pointer, "%d \t%f \t%f \n",
-                num_vertices,
-                (float) time_min_heap/NUM_EXPERIMENTS, 
-                (float) time_queue/NUM_EXPERIMENTS);
-
+                    num_vertices,
+                    (float)time_min_heap / NUM_EXPERIMENTS,
+                    (float)time_queue / NUM_EXPERIMENTS);
     }
     test();
-    
     return 0;
 }
-
-
