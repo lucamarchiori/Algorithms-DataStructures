@@ -185,15 +185,15 @@ const time_t RANDOM_SEED = 17;
 // Minimum number of vertices.
 const unsigned int MIN_NUM_VERTICES = 10; //10
 // Maximum number of vertices.
-const unsigned int MAX_NUM_VERTICES = 50; //1000
+const unsigned int MAX_NUM_VERTICES = 10000; //1000
 // Step from one experiment to another.
-const unsigned int STEP_EXPERIMENTS = 10;
+const unsigned int STEP_EXPERIMENTS = 100; //10
 // How many experiments for a fixed number of vertices?
-const unsigned int NUM_EXPERIMENTS = 25; //50
+const unsigned int NUM_EXPERIMENTS = 50; //50
 // Source vertex number.
 const unsigned int SOURCE_VERTEX_NUMBER = 0;
 // Edge probability.
-const unsigned int EDGE_PROBABILITY = 50; //1.0
+const unsigned int EDGE_PROBABILITY = 100; //1.0
 // Maximum weight.
 const unsigned int MAX_WEIGHT = 1000;
 // Output type.
