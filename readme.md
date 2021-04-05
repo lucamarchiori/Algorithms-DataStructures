@@ -16,7 +16,7 @@
 - We perform some comparisons for different values of m (fixed size of the hash table) and different proportions between number of insertions and number of searches.
 
 
-## Ex 2
+## Ex 3
 ### Dijkstra: Array VS Binary Heap
 
 - We perform an experiment implementing the Dijkstra algorithm using either an array or a binary heap as the priority queue. 
