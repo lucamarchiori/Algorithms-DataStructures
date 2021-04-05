@@ -1,8 +1,6 @@
 /**
  * @brief Problem 2, Laboratory of Algorithms and Data Structures.
- * @author SCIAVICCO Guido (guido.sciavicco@unife.it)
- * @author STAN Ionel Eduard (ioneleduard.stan@unife.it)
- * @author MARCHIORI Luca (luca01.marchiori@edu.unife.it)
+ * @author Marchiori Luca
  * @version Student
  */
 
