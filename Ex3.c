@@ -1,56 +1,9 @@
 /**
  * @brief Problem 3, Laboratory of Algorithms and Data Structures.
- * @author SCIAVICCO Guido (guido.sciavicco@unife.it)
- * @author STAN Ionel Eduard (ioneleduard.stan@unife.it)
+ * @author Luca Marchiori
  * @version Student
  */
 
-/*
-APPUNTI LEZIONE
-
-	IMPLEMENTAZIONI:
-		1) MINHEAP
-		2) ARRAY SENZA STRUTTURA 
-	
-	Misurare il tempo medio al crescere della dimensione del grafo e confrontale le due implementazioni.
-	Sorgente fissata.
-	Densit? variabile. Per ogni densit? si crea un grafico diverso che confronta i tempi delle due implementazioni.
-	
-	COSTRUZIONE DEL GRAFO:
-	Creo struttura di dimensione massima a 1000 e poi riempo in parte (es fino a 100)
-	Per ogni coppia i-j da 1 a 100 (dimensione stabilita) decido probabilisticamente se esiste l'arco o no.
-	Se arco esiste allora:
-		1) Assegno all'arco un peso casuale
-		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
-	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non pu? essere superato.
-	
-	CODE DI PRIORITA COME ARRAY:
-	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
-	Decrease key = cambiare priorita del vertice x = accedi in posizione x e assegna vuovo peso.
-	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
-	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
-	
-	CODE DI PRIORITA COME MINHEAP:
-	Min heap quindi è semi ordinata su priorita vertice (non sul nome). Ogni nodo della minheap è una coppia.
-	Decrease key = cambiare priorita del vertice x = per evitare di scorrere tutto l`array,
-	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
-	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
-	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
-	Per cambiare priorit? devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
-	Extract min = estrai il primo elemento, ribilancia con minheapify e aggiorna array P
-	Swap = prevede sia scambio su array heap che scambio su array P
-	
-	DIJKSTRA:
-	Dijkstra lavora da una sorgente fissata (Vertice 0)
-	Risultato = albero cammini minimi + pesi sui vertici per raggiungerli dalla sorgente
-	Array dove la posizione corrisponde al numero del vertice. Ogni casella ? la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
-	Crea una coda per ogni implementazione.
-	
-	FUNZIONI ANTAGONISTE:
-	1) Le due implementazioni devono dare gli stessi risultati in termini di pesi e di albero di cammini minimi
-	2) Creazione manaule di un grafo con pesi e archi prestabiliti e controllo che il cammino minimo risultate sia corretto
-	
-	*/
 
 // ##### LIBRARIES ##### //
 
@@ -921,3 +874,50 @@ int main()
     test();
     return 0;
 }
+
+/*
+APPUNTI LEZIONE
+
+	IMPLEMENTAZIONI:
+		1) MINHEAP
+		2) ARRAY SENZA STRUTTURA 
+	
+	Misurare il tempo medio al crescere della dimensione del grafo e confrontale le due implementazioni.
+	Sorgente fissata.
+	Densit? variabile. Per ogni densit? si crea un grafico diverso che confronta i tempi delle due implementazioni.
+	
+	COSTRUZIONE DEL GRAFO:
+	Creo struttura di dimensione massima a 1000 e poi riempo in parte (es fino a 100)
+	Per ogni coppia i-j da 1 a 100 (dimensione stabilita) decido probabilisticamente se esiste l'arco o no.
+	Se arco esiste allora:
+		1) Assegno all'arco un peso casuale
+		2) Faccio insert casella sulla struttura. Nella lista puntata da i faccio Insert nuovo elemento di valore j e peso casuale
+	I nodi sono inizializzati a infinito implementato come un numero negativo (da controllre ad ogni confronto altrimenti vincerebbe) o con un numero molto grande che non pu? essere superato.
+	
+	CODE DI PRIORITA COME ARRAY:
+	Array, ad ogni posizione corrisponde il nome del vertice e contiene il peso del vertice
+	Decrease key = cambiare priorita del vertice x = accedi in posizione x e assegna vuovo peso.
+	Extract min =  scorri tutto array ed estrai numero posizione con peso minore.
+	Su ogni casella flag che dice se esiste elemento o no (se l'ho estratto).
+	
+	CODE DI PRIORITA COME MINHEAP:
+	Min heap quindi è semi ordinata su priorita vertice (non sul nome). Ogni nodo della minheap è una coppia.
+	Decrease key = cambiare priorita del vertice x = per evitare di scorrere tutto l`array,
+	si usa un array di appoggio (P) che costruisco all'inizio e mantengo ad ogni operazione sulla heap,
+	Posizioni di P corrispondono ai nomi dei vertici e ogni elemento contiene la posizione del veritne N nella heap.
+	Quando chiamo ad esempio decreasekey(x), vado in posizione x di P, ottengo posizione di x nell'array della heap. H[P[x]].
+	Per cambiare priorit? devo modificare il suo valore, ribilanciare MinHeap e aggiornale la sua posizione in P
+	Extract min = estrai il primo elemento, ribilancia con minheapify e aggiorna array P
+	Swap = prevede sia scambio su array heap che scambio su array P
+	
+	DIJKSTRA:
+	Dijkstra lavora da una sorgente fissata (Vertice 0)
+	Risultato = albero cammini minimi + pesi sui vertici per raggiungerli dalla sorgente
+	Array dove la posizione corrisponde al numero del vertice. Ogni casella ? la testa della lista di adiacenza. La lista di adiacenza contiene il numero del vertice e il suo peso per raggiungerlo.
+	Crea una coda per ogni implementazione.
+	
+	FUNZIONI ANTAGONISTE:
+	1) Le due implementazioni devono dare gli stessi risultati in termini di pesi e di albero di cammini minimi
+	2) Creazione manaule di un grafo con pesi e archi prestabiliti e controllo che il cammino minimo risultate sia corretto
+	
+	*/
