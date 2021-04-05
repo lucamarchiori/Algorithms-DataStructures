@@ -450,6 +450,3 @@ main ()
   // We are done.
   return 0;
 }
-
-// ----- End MAIN FUNCTION ----- //
-
